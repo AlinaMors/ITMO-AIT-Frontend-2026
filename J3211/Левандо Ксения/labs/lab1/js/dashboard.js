@@ -5,7 +5,6 @@ if (localStorage.getItem("auth") !== "true") {
 
 // loading a user
 const user = JSON.parse(localStorage.getItem("user"));
-
 document.getElementById("userName").textContent = user.name;
 document.getElementById("userEmail").textContent = user.email;
 
@@ -17,7 +16,8 @@ let tickets = JSON.parse(localStorage.getItem("tickets")) || [];
 function renderTickets() {
     const container = document.getElementById("ticketsList");
 
-    if (tickets.length === 0) {
+    const userTickets = tickets.filter(ticket => ticket.owner === user.email);
+    if (userTickets.length === 0) {
         container.innerHTML = `
             <p class="text-muted">You haven't purchased any tickets yet.</p>
         `;
@@ -26,7 +26,7 @@ function renderTickets() {
 
     container.innerHTML = "";
 
-    tickets.forEach((ticket, index) => {
+    userTickets.forEach((ticket, index) => {
         container.innerHTML += `
             <div class="border rounded p-3 mb-2 d-flex justify-content-between align-items-center">
                 <div>

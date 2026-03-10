@@ -48,8 +48,20 @@ form.addEventListener("submit", function (e) {
         password
     };
 
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    // check email unoccupied
+    const userExists = users.find(u => u.email === email);
+
+    if (userExists) {
+        alert("User with this email already exists");
+        return;
+    }
+    // add user
+    users.push(user);
+
     // Save in localStorage
-    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("users", JSON.stringify(users));
 
     alert("Registration successful!");
 

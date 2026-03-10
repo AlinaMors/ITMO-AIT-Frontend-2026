@@ -4,14 +4,19 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
 
-    const storedUser = JSON.parse(localStorage.getItem("user"));
+    // load all users
+    const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    if (!storedUser) {
+    // find user
+    const foundUser = users.find(user => user.email === email);
+
+    if (!foundUser) {
         alert("User not found");
         return;
     }
 
-    if (email === storedUser.email && password === storedUser.password) {
+    if (password === foundUser.password) {
+        localStorage.setItem("user", JSON.stringify(foundUser));
         localStorage.setItem("auth", "true");
         window.location.href = "index.html";
     } else {
