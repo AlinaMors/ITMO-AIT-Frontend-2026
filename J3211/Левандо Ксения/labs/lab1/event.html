@@ -33,33 +33,64 @@
     </nav>
 
     <!-- Content -->
-     <div class="container my-5">
-    <h1 id="eventTitle"></h1>
-    <img id="eventImage" class="img-fluid mb-4">
-    <p id="eventDescription"></p>
-    <p id="eventVenue" class="text-muted"></p>
-    <p class="text-muted" id="eventMeta"></p>
-    <button class="btn btn-warning" id="buyBtn">
-    Buy ticket
-    </button>
-    <!-- seat map -->
-    <h3 class="mt-3">Seat Map</h3>
-    <img id="seatMap" class="img-fluid mb-4" src="" alt="Seat Map">
-
-    <!-- reviews -->
-        <h3>Reviews</h3>
-        <div id="reviewsContainer">
-        <p class="text-muted">No reviews yet.</p>
+     <!-- Content -->
+<div class="container my-5">
+    <div class="row g-4">
+        <!-- left: image -->
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <img id="eventImage" class="card-img-top" style="max-height: 350px; object-fit: cover;">
+                <div class="card-body">
+                    <span class="badge bg-secondary mb-2" id="eventType"></span>
+                    <h3 id="eventTitle" class="card-title"></h3>
+                    <p class="text-muted" id="eventMeta"></p>
+                    <p id="eventVenue"></p>
+                    <button class="btn btn-warning w-100" id="buyBtn">Buy ticket</button>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-        <label for="reviewInput" class="form-label">Leave a review</label>
-        <textarea id="reviewInput" class="form-control" rows="2"></textarea>
-        <button class="btn btn-primary mt-2" id="submitReview">Submit</button>
-        </div>
+        <!-- right: description + reviews -->
+        <div class="col-md-7">
+            <h4>Description</h4>
+            <p id="eventDescription"></p>
 
+            <h4 class="mt-4">Seat Map</h4>
+            <img id="seatMap" class="img-fluid mb-4" src="" alt="Seat Map" style="max-height: 300px; object-fit: contain;">
+
+            <h4>Reviews</h4>
+            <div id="reviewsContainer" class="mb-3">
+                <p class="text-muted">No reviews yet.</p>
+            </div>
+
+            <div class="mb-3">
+                <label for="reviewInput" class="form-label">Leave a review</label>
+                <textarea id="reviewInput" class="form-control" rows="2"></textarea>
+                <button class="btn btn-primary mt-2" id="submitReview">Submit</button>
+            </div>
+        </div>
     </div>
-
+</div>
+    <!-- Buy Ticket Modal -->
+        <div class="modal fade" id="buyTicketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Ticket Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <select id="ticketCategory" class="form-select mb-3"></select>
+                <p id="ticketPrice" class="fw-bold"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" id="confirmBuyBtn">Buy</button>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
     <!-- Footer -->
      <footer class="site-footer">
         <div class="container text-center">
