@@ -11,7 +11,10 @@ function showUserUI() {
     const block = document.getElementById("authButtons");
 
     block.innerHTML = `
-        <a href="dashboard.html" class="btn btn-outline-light me-2">
+        <span class="text-light mt-2 me-3">
+            Hello, ${user.name}!
+        </span>
+        <a href="dashboard.html" class="btn btn-outline-light me-3">
             My Profile
         </a>
         <button class="btn btn-outline-warning" onclick="logout()">Logout</button>
@@ -20,5 +23,6 @@ function showUserUI() {
 
 function logout() {
     localStorage.removeItem("auth");
+    localStorage.removeItem("user");
     location.reload();
 }
