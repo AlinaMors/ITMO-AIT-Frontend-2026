@@ -33,7 +33,7 @@
     </nav>
 
     <!-- Content -->
-    <main class="container my-5">
+    <div class="container my-5">
         <!-- Header -->
         <h1 class="mb-4">Events</h1>
 
@@ -61,30 +61,7 @@
 
 
     <!-- Events grid -->
-    <div class="row g-4">
-
-        <!-- Event 1 -->
-        <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-
-        <img src="" class="card-img-top">
-
-        <div class="card-body">
-
-        <h5 class="card-title">Some Event</h5>
-
-        <p class="card-text text-muted">
-        London · 1 JAN 2027
-        </p>
-
-        <button class="btn btn-warning"
-        onclick="buyTicket('Some Event','1 Jan 2027')">
-        Buy ticket
-        </button>
-
-        </div>
-        </div>
-        </div>
+    <div class="row g-4" id="eventsContainer"></div>
     </div>
     <!-- Footer -->
      <footer class="site-footer">
