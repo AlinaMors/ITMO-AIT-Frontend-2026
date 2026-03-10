@@ -36,7 +36,44 @@
     </nav>
 
     <main class="container mt-5 pt-3 mb-5">
+        <div class="filter-top-bar p-3 p-md-4 rounded-4 mb-4">
+            <form class="row g-3 align-items-end">
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-white-50 small mb-1">Поиск</label>
+                    <input type="text" id="searchInput" class="form-control bg-dark text-white border-secondary" placeholder="Название курса...">
+                </div>
 
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label class="form-label text-white-50 small mb-1">Направление</label>
+                    <select class="form-select bg-dark text-white border-secondary">
+                        <option value="all">Все</option>
+                        <option value="lang">Языки</option>
+                        <option value="data">Данные/ML</option>
+                        <option value="math">Математика</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label class="form-label text-white-50 small mb-1">Уровень</label>
+                    <select class="form-select bg-dark text-white border-secondary">
+                        <option value="all">Любой</option>
+                        <option value="beginner">Новичок</option>
+                        <option value="pro">Pro</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-4 col-lg-3">
+                    <label class="form-label text-white-50 small mb-1 d-flex justify-content-between">
+                        <span>Цена до:</span>
+                        <span class="text-white fw-bold">10 000 ₽</span>
+                    </label>
+                    <input type="range" class="form-range custom-range" min="0" max="10000" step="500" value="10000">
+                </div>
+
+                <div class="col-12 col-lg-2">
+                    <button type="button" class="btn btn-neon w-100 fw-bold">Найти</button>
+                </div>
+            </form>
         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
             <div class="col">
                 <div class="card course-card h-100 bg-dark text-white border-secondary rounded-4 overflow-hidden d-flex flex-column">
