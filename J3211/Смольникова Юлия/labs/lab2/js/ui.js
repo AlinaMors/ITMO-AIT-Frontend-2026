@@ -1,0 +1,69 @@
+document.addEventListener("DOMContentLoaded", renderNavbar);
+
+function renderNavbar() {
+    const container = document.getElementById("navbar-container");
+    if (!container) return;
+
+    const user = getUser();
+    const isAuth = isAuthenticated();
+    const isTeacher = user?.role === "teacher";
+
+    const currentPage = window.location.pathname.split("/").pop() || "index.html";
+
+    const authButtons = isAuth
+        ? `<button onclick="logout()" class="btn btn-outline-custom btn-sm">Выход</button>`
+        : `<a href="login.html" class="btn btn-outline-custom btn-sm">Вход</a>
+           <a href="register.html" class="btn btn-primary-custom btn-sm">Регистрация</a>`;
+
+    const navLinks = `
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link ${isActive('index.html', currentPage)}" href="index.html">Главная</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link ${isActive('course.html', currentPage)}" href="index.html#courseList">Каталог</a>
+            </li>
+            ${isAuth ? `
+            <li class="nav-item">
+                <a class="nav-link ${isActive('dashboard.html', currentPage)}" href="dashboard.html">Моё обучение</a>
+            </li>` : ""}
+            ${isTeacher ? `
+            <li class="nav-item">
+                <a class="nav-link ${isActive('teacher.html', currentPage)}" href="teacher.html">Преподаватель</a>
+            </li>` : ""}
+        </ul>
+    `;
+
+    container.innerHTML = `
+        <nav class="navbar navbar-expand-lg sticky-top">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="index.html">Learnify</a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                        data-bs-target="#mainNavbar" aria-controls="mainNavbar" 
+                        aria-expanded="false" aria-label="Открыть меню">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    ${navLinks}
+                    
+                    <div class="d-flex align-items-center gap-2 ms-lg-3">
+                        ${isAuth ? `<span class="small navbar-user-name">${user?.name || ""}</span>` : ""}
+                        ${authButtons}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    `;
+}
+
+function isActive(linkHref, currentPage) {
+    if (linkHref === 'index.html' && (currentPage === 'index.html' || currentPage === '')) {
+        return 'active';
+    }
+    if (linkHref === currentPage) {
+        return 'active';
+    }
+    return '';
+}
