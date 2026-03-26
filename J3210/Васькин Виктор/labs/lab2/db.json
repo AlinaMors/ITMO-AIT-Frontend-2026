@@ -6,6 +6,13 @@
       "name": "test",
       "role": "student",
       "id": 1
+    },
+    {
+      "email": "teach@gmail.com",
+      "password": "$2a$10$RIPfZb61zSXtArWV28bomer7MYheU.g7CN0RJ5BziptJTR0G6YF12",
+      "name": "Маэстро",
+      "role": "teacher",
+      "id": 2
     }
   ],
   "courses": [
