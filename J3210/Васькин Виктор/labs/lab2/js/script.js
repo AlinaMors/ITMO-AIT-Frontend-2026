@@ -211,66 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (window.location.pathname.includes('profile.html')) {
-        if (!userJson || !token) {
-            window.location.href = 'login.html';
-        } else {
-            const user = JSON.parse(userJson);
-
-            const profileName = document.querySelector('.card h2');
-            const profileEmail = document.querySelector('.card .text-white-50.mb-2');
-            const profileAvatar = document.querySelector('.card img.rounded-circle.border-3');
-
-            if (profileName) profileName.textContent = user.name;
-            if (profileEmail) profileEmail.textContent = user.email;
-            if (profileAvatar) profileAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=a855f7&color=fff&size=128`;
-
-            const studentTabBtn = document.querySelector('[data-bs-target="#student-panel"]');
-            const teacherTabBtn = document.querySelector('[data-bs-target="#teacher-panel"]');
-
-            if (user.role === 'student') {
-                teacherTabBtn.parentElement.style.display = 'none';
-                studentTabBtn.click();
-            } else if (user.role === 'teacher') {
-                studentTabBtn.parentElement.style.display = 'none';
-                teacherTabBtn.click();
-
-                const tbody = document.getElementById('teacherCoursesTable');
-                if (tbody) {
-                    fetch(`http://localhost:4000/courses?teacherName=${encodeURIComponent(user.name)}`)
-                        .then(res => res.json())
-                        .then(courses => {
-                            tbody.innerHTML = '';
-                            
-                            const statNumbers = document.querySelectorAll('.fs-3.fw-bold');
-                            if (statNumbers.length > 0) statNumbers[0].textContent = courses.length;
-
-                            if (courses.length === 0) {
-                                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-white-50 py-4">У вас пока нет созданных курсов.</td></tr>';
-                                return;
-                            }
-
-                            courses.forEach(course => {
-                                const priceText = course.price === 0 ? 'Бесплатно' : `${course.price} ₽`;
-                                const stars = '★'.repeat(course.rating) + '☆'.repeat(5 - course.rating);
-                                
-                                tbody.innerHTML += `
-                                    <tr>
-                                        <td class="text-white fw-bold">${course.title}</td>
-                                        <td class="text-white-50">${priceText}</td>
-                                        <td class="text-warning">${stars}</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="deleteCourse(${course.id})">Удалить</button>
-                                        </td>
-                                    </tr>
-                                `;
-                            });
-                        })
-                        .catch(err => console.error(err));
-                }
-            }
-        }
-    }
 
     if (window.location.pathname.includes('course.html')) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -302,20 +242,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    if (window.location.pathname.includes('profile.html')) {
+        if (!userJson || !token) {
+            window.location.href = 'login.html';
+        } else {
+            const user = JSON.parse(userJson);
 
-    if (window.location.pathname.includes('profile.html') && userJson) {
-        const user = JSON.parse(userJson);
-        if (user.role === 'student') {
-            const statNumbers = document.querySelectorAll('.fs-3.fw-bold');
-            if (statNumbers.length >= 3) {
-                statNumbers[0].textContent = '0';
-                statNumbers[1].textContent = '0';
-                statNumbers[2].textContent = '0.0';
-            }
+            document.getElementById('profileName').textContent = user.name;
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=a855f7&color=fff&size=128`;
+            document.getElementById('profileRoleBadge').textContent = user.role === 'teacher' ? 'Преподаватель' : 'Студент';
 
-            const studentCoursesContainer = document.querySelector('#student-panel .row');
-            if (studentCoursesContainer) {
-                studentCoursesContainer.innerHTML = '<div class="col-12"><p class="text-white-50 fs-5">Вы пока не записались ни на один курс. Самое время перейти в <a href="index.html" class="text-neon">каталог</a>!</p></div>';
+            const studentTabBtn = document.querySelector('[data-bs-target="#student-panel"]');
+            const teacherTabBtn = document.querySelector('[data-bs-target="#teacher-panel"]');
+
+            if (user.role === 'student') {
+                teacherTabBtn.parentElement.style.display = 'none';
+                studentTabBtn.click();
+
+                document.getElementById('stat1').textContent = '0';
+                document.getElementById('stat2').textContent = '0';
+                document.getElementById('stat3').textContent = '0.0';
+
+                document.getElementById('studentCoursesList').innerHTML = '<div class="col-12"><p class="text-white-50 fs-5">Вы пока не записались ни на один курс. Самое время перейти в <a href="index.html" class="text-neon">каталог</a>!</p></div>';
+
+            } else if (user.role === 'teacher') {
+                studentTabBtn.parentElement.style.display = 'none';
+                teacherTabBtn.click();
+
+                document.getElementById('statLabel1').textContent = 'Мои курсы';
+                document.getElementById('statLabel2').textContent = 'Студентов';
+
+                const tbody = document.getElementById('teacherCoursesTable');
+                if (tbody) {
+                    fetch(`http://localhost:4000/courses?teacherName=${encodeURIComponent(user.name)}`)
+                        .then(res => res.json())
+                        .then(courses => {
+                            tbody.innerHTML = ''; 
+
+                            document.getElementById('stat1').textContent = courses.length;
+                            
+                            if (courses.length > 0) {
+                                let totalRating = 0;
+                                courses.forEach(c => totalRating += c.rating);
+                                document.getElementById('stat3').textContent = (totalRating / courses.length).toFixed(1);
+                                document.getElementById('stat2').textContent = courses.length * 42; 
+                            } else {
+                                document.getElementById('stat2').textContent = '0';
+                                document.getElementById('stat3').textContent = '0.0';
+                                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-white-50 py-4">У вас пока нет созданных курсов.</td></tr>';
+                                return;
+                            }
+
+                            courses.forEach(course => {
+                                const priceText = course.price === 0 ? 'Бесплатно' : `${course.price} ₽`;
+                                const stars = '★'.repeat(course.rating) + '☆'.repeat(5 - course.rating);
+                                
+                                tbody.innerHTML += `
+                                    <tr>
+                                        <td class="text-white fw-bold">${course.title}</td>
+                                        <td class="text-white-50">${priceText}</td>
+                                        <td class="text-warning">${stars}</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="deleteCourse(${course.id})">Удалить</button>
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+                        })
+                        .catch(err => console.error(err));
+                }
             }
         }
     }
