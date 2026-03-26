@@ -1,6 +1,14 @@
 {
-  "users": [],
-  "courses":[
+  "users": [
+    {
+      "email": "test@gmail.com",
+      "password": "$2a$10$RfqzoEGAX5FlAunTOW566.OnVR5i7aaT3WUZftrWRZOVUgI16FnGK",
+      "name": "test",
+      "role": "student",
+      "id": 1
+    }
+  ],
+  "courses": [
     {
       "id": 1,
       "title": "Python",
