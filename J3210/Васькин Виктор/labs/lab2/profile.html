@@ -131,24 +131,19 @@
                     </button>
                 </div>
 
-                <div class="table-responsive">
+                <div class="table-responsive mt-3">
                     <table class="table table-dark table-hover border-secondary align-middle">
                         <thead>
                             <tr>
                                 <th scope="col" class="text-white-50">Название</th>
-                                <th scope="col" class="text-white-50">Студентов</th>
+                                <th scope="col" class="text-white-50">Цена</th>
                                 <th scope="col" class="text-white-50">Рейтинг</th>
                                 <th scope="col" class="text-white-50 text-end">Действия</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="teacherCoursesTable">
                             <tr>
-                                <td class="text-white fw-bold">Продвинутый Python</td>
-                                <td>342</td>
-                                <td class="text-warning">★★★★★</td>
-                                <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-light rounded-pill">Редактировать</button>
-                                </td>
+                                <td colspan="4" class="text-center text-white-50 py-4">Загрузка курсов...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -168,23 +163,23 @@
                 </div>
                 
                 <div class="modal-body">
-                    <form>
+                    <form id="createCourseForm">
                         <div class="mb-3">
                             <label class="form-label text-white-50">Название курса</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="Например: Основы дизайна">
+                            <input type="text" id="ccTitle" class="form-control bg-dark text-white border-secondary" placeholder="Например: Основы дизайна" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-white-50">Описание</label>
-                            <textarea class="form-control bg-dark text-white border-secondary" rows="3" placeholder="Кратко о чем курс..."></textarea>
+                            <textarea id="ccDesc" class="form-control bg-dark text-white border-secondary" rows="3" placeholder="Кратко о чем курс..." required></textarea>
                         </div>
                         <div class="row g-3 mb-4">
                             <div class="col-6">
                                 <label class="form-label text-white-50">Цена (₽)</label>
-                                <input type="number" class="form-control bg-dark text-white border-secondary" placeholder="0 = Бесплатно">
+                                <input type="number" id="ccPrice" class="form-control bg-dark text-white border-secondary" placeholder="0 = Бесплатно">
                             </div>
                             <div class="col-6">
                                 <label class="form-label text-white-50">Обложка</label>
-                                <input class="form-control bg-dark text-white border-secondary" type="file">
+                                <input type="file" id="ccImage" class="form-control bg-dark text-white border-secondary" accept="image/*">
                             </div>
                         </div>
                     </form>
@@ -192,7 +187,7 @@
                 
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">Отмена</button>
-                    <button type="button" class="btn btn-neon rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Опубликовать</button>
+                    <button type="submit" form="createCourseForm" class="btn btn-neon rounded-pill px-4 fw-bold">Опубликовать</button>
                 </div>
                 
             </div>

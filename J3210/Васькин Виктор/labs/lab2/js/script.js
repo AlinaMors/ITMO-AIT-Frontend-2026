@@ -13,7 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
             coursesGrid.innerHTML = '';
 
             if (courses.length === 0) {
-                coursesGrid.innerHTML = '<div class="col-12"><p class="text-white-50 text-center mt-5 fs-5">По вашему запросу ничего не найдено</p></div>';
+                coursesGrid.innerHTML = `
+                    <div class="col-12 d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                        <h4 class="text-white-50 text-center">По вашему запросу ничего не найдено</h4>
+                    </div>`;
                 return;
             }
 
@@ -83,6 +86,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 params.append('price_lte', price);
 
                 loadCourses(`?${params.toString()}`);
+            });
+        }
+
+        const resetBtn = document.getElementById('resetFiltersBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('categorySelect').value = 'all';
+                document.getElementById('levelSelect').value = 'all';
+                document.getElementById('priceRange').value = 10000;
+                document.getElementById('priceLabel').textContent = '10 000 ₽';
+                
+                loadCourses();
             });
         }
     }
@@ -218,6 +234,40 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (user.role === 'teacher') {
                 studentTabBtn.parentElement.style.display = 'none';
                 teacherTabBtn.click();
+
+                const tbody = document.getElementById('teacherCoursesTable');
+                if (tbody) {
+                    fetch(`http://localhost:4000/courses?teacherName=${encodeURIComponent(user.name)}`)
+                        .then(res => res.json())
+                        .then(courses => {
+                            tbody.innerHTML = '';
+                            
+                            const statNumbers = document.querySelectorAll('.fs-3.fw-bold');
+                            if (statNumbers.length > 0) statNumbers[0].textContent = courses.length;
+
+                            if (courses.length === 0) {
+                                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-white-50 py-4">У вас пока нет созданных курсов.</td></tr>';
+                                return;
+                            }
+
+                            courses.forEach(course => {
+                                const priceText = course.price === 0 ? 'Бесплатно' : `${course.price} ₽`;
+                                const stars = '★'.repeat(course.rating) + '☆'.repeat(5 - course.rating);
+                                
+                                tbody.innerHTML += `
+                                    <tr>
+                                        <td class="text-white fw-bold">${course.title}</td>
+                                        <td class="text-white-50">${priceText}</td>
+                                        <td class="text-warning">${stars}</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="deleteCourse(${course.id})">Удалить</button>
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+                        })
+                        .catch(err => console.error(err));
+                }
             }
         }
     }
@@ -269,5 +319,90 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    const createCourseForm = document.getElementById('createCourseForm');
+    if (createCourseForm) {
+        createCourseForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            
+            const userJson = localStorage.getItem('user');
+            if (!userJson) return;
+            const user = JSON.parse(userJson);
+
+            const title = document.getElementById('ccTitle').value;
+            const desc = document.getElementById('ccDesc').value;
+            const price = Number(document.getElementById('ccPrice').value) || 0;
+            const fileInput = document.getElementById('ccImage');
+
+            const sendDataToServer = async (imageUrl) => {
+                const newCourse = {
+                    title: title,
+                    desc: desc,
+                    price: price,
+                    category: "lang", 
+                    categoryLabel: "Разное",
+                    level: "beginner", 
+                    levelLabel: "Новичок",
+                    rating: 5,
+                    reviews: 0,
+                    image: imageUrl,
+                    teacherName: user.name, 
+                    teacherRole: "Преподаватель",
+                    teacherAvatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=a855f7&color=fff`
+                };
+
+                try {
+                    const response = await fetch('http://localhost:4000/courses', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        },
+                        body: JSON.stringify(newCourse)
+                    });
+
+                    if (!response.ok) throw new Error('Ошибка при создании курса');
+
+                    alert('Курс успешно создан!');
+                    window.location.href = 'index.html'; 
+                } catch (error) {
+                    alert(error.message);
+                }
+            };
+
+            if (fileInput && fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onloadend = () => {
+                    sendDataToServer(reader.result);
+                };
+                
+                reader.readAsDataURL(file);
+            } else {
+                sendDataToServer("img/course1.png");
+            }
+        });
+    }
+
+    window.deleteCourse = async function(courseId) {
+        if (confirm('Вы точно хотите навсегда удалить этот курс?')) {
+            try {
+                const response = await fetch(`http://localhost:4000/courses/${courseId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Ошибка при удалении курса');
+
+                window.location.reload();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+    };
+ 
 });
 
