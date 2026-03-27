@@ -1,14 +1,32 @@
+const API_URL = "http://localhost:3000"; // адрес сервера
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("🏵️ AIBloom: Оранжерея готова к работе!");
 
-    // Логика формы входа
+    // Логика формы входа (с fetch)
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
-            alert(`Добро пожаловать в сад, ${email}!`);
-            window.location.href = 'profile.html';
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                // запрос к json-серверу
+                const response = await fetch(`${API_URL}/users?email=${email}&password=${password}`);
+                const users = await response.json();
+
+                if (users.length > 0) {
+                    // если пользователь найден, сохраняем его в память браузера
+                    localStorage.setItem("currentUser", JSON.stringify(users[0]));
+                    alert(`Добро пожаловать в сад, ${users[0].name}!`);
+                    window.location.href = 'profile.html';
+                } else {
+                    alert("Ошибка: Неверный email или пароль!");
+                }
+            } catch (error) {
+                alert("Ошибка: Нужно запустить json-server!");
+            }
         });
     }
 
@@ -110,5 +128,4 @@ document.addEventListener('DOMContentLoaded', () => {
             forkCount.innerText = parseInt(forkCount.innerText) + 1;
         });
     }
-
 });
