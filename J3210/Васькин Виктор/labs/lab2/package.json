@@ -4,7 +4,7 @@
   "description": "В рамках данной дисциплины Вам предстоит изучить основы клиентской веб-разработки, познакмиться с языками CSS, HTML и JS. Научиться реализовывать одностраничное приложение средствами фреймворка Vue.JS.",
   "main": "index.js",
   "scripts": {
-    "start": "json-server \"J3210/Васькин Виктор/labs/lab2/db.json\" -m ./node_modules/json-server-auth -p 4000 --host 127.0.0.1"
+    "start": "json-server db.json -m ./node_modules/json-server-auth -p 4000 --host 127.0.0.1"
   },
   "repository": {
     "type": "git",
