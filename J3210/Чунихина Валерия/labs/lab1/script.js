@@ -74,6 +74,50 @@ async function loadHuggingFaceTrends() {
     } catch (e) { console.error(e); }
 }
 
+// Загрузка моделей конкретного пользователя
+async function loadUserModels() {
+    const container = document.getElementById('user-models-list'); // Добавь этот id в profile.html
+    if (!container) return;
+
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(`${API_URL}/models?userId=${currentUser.id}`);
+        const models = await response.json();
+
+        container.innerHTML = "";
+        if (models.length === 0) {
+            container.innerHTML = '<p class="text-muted py-4">Ваш личный сад пока пуст.</p>';
+            return;
+        }
+
+        models.forEach(model => {
+            container.innerHTML += `
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body d-flex justify-content-between align-items-center p-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-soft-blue p-3 rounded-4 me-3">${model.type === 'model' ? '🌳' : '🍱'}</div>
+                            <div>
+                                <h6 class="mb-1 fw-bold">${model.name}</h6>
+                                <span class="badge bg-light text-dark mb-1">${model.type}</span>
+                                <br><small class="text-muted">Личный проект пользователя</small>
+                            </div>
+                        </div>
+                        <button onclick="deleteUserModel('${model.id}')" class="btn btn-sm btn-outline-danger">Удалить</button>
+                    </div>
+                </div>`;
+        });
+    } catch (e) { console.error(e); }
+}
+
+// Удаление модели пользователя
+window.deleteUserModel = async function(id) {
+    if (!confirm("Вы уверены?")) return;
+    await fetch(`${API_URL}/models/${id}`, { method: 'DELETE' });
+    loadUserModels();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("🏵️ AIBloom: Оранжерея готова к работе!");
 
@@ -91,6 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const users = await response.json();
 
                 if (users.length > 0) {
+                    localStorage.removeItem("currentUser"); // Сначала удаляем старого
+                    localStorage.setItem("currentUser", JSON.stringify(users[0])); // Записываем нового
+
                     // если пользователь найден, сохраняем его в память браузера
                     localStorage.setItem("currentUser", JSON.stringify(users[0]));
                     alert(`Добро пожаловать в сад, ${users[0].name}!`);
@@ -142,21 +189,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
     if (currentUser) {
-        // 1. Меняем "Вход" на имя пользователя в навигации (на всех страницах)
+        // меняем Вход на имя пользователя в навигации (на всех страницах)
         const navLoginLink = document.querySelector('a[href="login.html"]');
         if (navLoginLink) {
             navLoginLink.innerHTML = `👤 ${currentUser.name}`;
             navLoginLink.href = "profile.html";
         }
 
-        // 2. Меняем имя в боковой панели профиля (только на profile.html)
-        // Ищем h4 внутри aside
+        // 2. меняем имя в боковой панели профиля (только на profile.html)
+        // найти h4 внутри aside
         const profileName = document.querySelector('aside h4');
         if (profileName) {
             profileName.innerText = currentUser.name;
         }
 
-        // 3. (Опционально) Можно поменять подпись под именем
+        // подпись под именем
         const profileSubtext = document.querySelector('aside p.text-muted');
         if (profileSubtext) {
             profileSubtext.innerText = `Выращиваю нейросети с 2024 года • ${currentUser.email}`;
@@ -193,27 +240,47 @@ document.addEventListener('DOMContentLoaded', () => {
     // загрузка данных при старте
     loadModels();
     loadHuggingFaceTrends();
+    loadUserModels();
 
 
     // Логика модального окна загрузки
     const uploadForm = document.getElementById('uploadForm');
     if (uploadForm) {
-        uploadForm.addEventListener('submit', (e) => {
+        uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (!currentUser) return;
+
             const btn = e.target.querySelector('button');
             const originalText = btn.innerHTML;
 
             btn.innerHTML = "🌱 Посев...";
             btn.disabled = true;
 
-            setTimeout(() => {
-                alert('Модель успешно посажена и скоро появится в вашем саду!');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                // Закрываем через Bootstrap API
+            const newModel = {
+                name: document.getElementById('modelName').value,
+                type: document.getElementById('modelType').value,
+                userId: currentUser.id, // модель к ID текущего пользователя
+                stars: 0
+            };
+
+            try {
+                await fetch(`${API_URL}/models`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newModel)
+                });
+
+                alert('Модель успешно сохранена в вашем личном инвентаре!');
                 const modal = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
                 modal.hide();
-            }, 2000);
+                uploadForm.reset();
+                loadUserModels(); // обновление списка в профиле
+            } catch (e) {
+                alert('Ошибка при сохранении');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         });
     }
 

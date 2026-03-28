@@ -1,21 +1,28 @@
 {
   "users": [
     {
-      "id": "1",
       "name": "Валерия Чунихина",
       "email": "chunikhinaval@gmail.com",
-      "password": "777lera"
+      "password": "777lera",
+      "id": "1"
     },
     {
       "name": "Саша Уракова",
       "email": "urakovasasha@gmail.com",
       "password": "6666sasha",
       "id": "7mVy544WgEw"
+    },
+    {
+      "name": "Эрнест Андреев",
+      "email": "ernest@gmail.com",
+      "password": "9999уктуыегы",
+      "id": "Kvh2BK6gcts"
     }
   ],
   "models": [
     {
       "id": "1",
+      "userId": "Kvh2BK6gcts",
       "name": "Forest-Vision v2",
       "type": "model",
       "task": "Computer Vision",
@@ -27,6 +34,7 @@
     },
     {
       "id": "2",
+      "userId": "7mVy544WgEw",
       "name": "Russian-GPT-Flora",
       "type": "dataset",
       "task": "NLP",
@@ -36,5 +44,6 @@
       "stars": 850,
       "description": "Датасет описаний растений."
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
