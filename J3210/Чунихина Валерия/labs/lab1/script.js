@@ -30,13 +30,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Логика формы регистрации
+    // Логика формы регистрации (с post запросом)
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
-        registerForm.addEventListener('submit', (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Аккаунт создан! Теперь можно войти.');
-            window.location.href = 'login.html';
+
+            // сбор данных из полей
+            const newUser = {
+                name: document.getElementById('regName').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value
+            };
+
+            try {
+                // отправка данных на сервер
+                const response = await fetch(`${API_URL}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newUser)
+                });
+
+                if (response.ok) {
+                    alert('Семена посеяны! Аккаунт успешно создан в базе.');
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error("Ошибка при регистрации:", error);
+                alert('Не удалось сохранить пользователя. Проверьте json-server.');
+            }
         });
     }
 
