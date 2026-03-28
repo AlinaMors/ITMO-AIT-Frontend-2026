@@ -138,6 +138,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Проверка авторизации и обновление профиля
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (currentUser) {
+        // 1. Меняем "Вход" на имя пользователя в навигации (на всех страницах)
+        const navLoginLink = document.querySelector('a[href="login.html"]');
+        if (navLoginLink) {
+            navLoginLink.innerHTML = `👤 ${currentUser.name}`;
+            navLoginLink.href = "profile.html";
+        }
+
+        // 2. Меняем имя в боковой панели профиля (только на profile.html)
+        // Ищем h4 внутри aside
+        const profileName = document.querySelector('aside h4');
+        if (profileName) {
+            profileName.innerText = currentUser.name;
+        }
+
+        // 3. (Опционально) Можно поменять подпись под именем
+        const profileSubtext = document.querySelector('aside p.text-muted');
+        if (profileSubtext) {
+            profileSubtext.innerText = `Выращиваю нейросети с 2024 года • ${currentUser.email}`;
+        }
+    }
+
     // Логика фильтрации (связь фильтров с API)
     const filterForm = document.getElementById('filterForm');
     const searchBtn = document.getElementById('searchBtn');
@@ -256,6 +281,15 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Модель успешно скопирована (форкнута) в ваш сад!');
             const forkCount = forkBtn.querySelector('.count');
             forkCount.innerText = parseInt(forkCount.innerText) + 1;
+        });
+    }
+
+    // Логика выхода из аккаунта
+    const logoutBtn = document.querySelector('a[href="index.html"].btn-outline-danger');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem("currentUser"); // Удаляем пользователя из памяти
+            // После этого ссылка сама перекинет на index.html
         });
     }
 });
