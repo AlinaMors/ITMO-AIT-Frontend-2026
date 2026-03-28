@@ -1,4 +1,78 @@
 const API_URL = "http://localhost:3000"; // адрес сервера
+const HF_API_BASE = "https://huggingface.co/api/models"; // Внешнее API
+
+
+// Функция загрузки 7 моделей для главной сетки (1 + 3 + 3)
+async function loadModels(filterParams = "") {
+    const grid = document.getElementById("model-grid");
+    if (!grid) return;
+
+    // спиннер загрузки пока ждем ответ от API
+    grid.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-success"></div></div>';
+
+    try {
+        // запрос: сортировка по скачиваниям, лимит 7 штук + параметры фильтров
+        const url = `${HF_API_BASE}?sort=downloads&direction=-1&limit=7&full=true${filterParams}`;
+        const response = await fetch(url);
+        const models = await response.json();
+
+        grid.innerHTML = "";
+        models.forEach((model, index) => {
+            let colClass = (index === 0) ? "col-12 mb-4" : "col-md-4 mb-4";
+
+            // убираем лишнее из названия и проверяем наличие тегов
+            const modelName = model.modelId.split('/').pop();
+            const author = model.modelId.split('/')[0];
+            const downloads = model.downloads ? model.downloads.toLocaleString() : 0;
+            const task = model.pipeline_tag || "AI Model";
+
+            // создаем HTML карточки
+            grid.innerHTML += `
+                <div class="${colClass}">
+                    <div class="card h-100 border-0 shadow-sm card-hover ${index === 0 ? 'bg-light-bloom' : ''}">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-primary text-white">${task}</span>
+                                <span class="text-muted small">📥 ${downloads}</span>
+                            </div>
+                            <h5 class="card-title fw-bold">${modelName} ${index === 0 ? '🌟' : ''}</h5>
+                            <p class="small text-muted mb-1">Автор: ${author}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <span class="small" style="color: var(--bloom-green); font-weight: 500;">
+                                    ${model.library_name || 'Transformers'}
+                                </span>
+                                <a href="https://huggingface.co/${model.modelId}" target="_blank" class="btn btn-sm ${index === 0 ? 'btn-primary' : 'btn-outline-primary'} px-3">Изучить</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    } catch (error) {
+        console.error("Ошибка API:", error);
+    }
+}
+
+// Функция загрузки мировых трендов (8 простых карточек внизу страницы)
+async function loadHuggingFaceTrends() {
+    const container = document.getElementById('hf-trends-grid');
+    if (!container) return;
+    try {
+        const response = await fetch(`${HF_API_BASE}?sort=downloads&direction=-1&limit=8`);
+        const models = await response.json();
+        container.innerHTML = '';
+        models.forEach((model) => {
+            container.innerHTML += `
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 card-hover p-3 shadow-sm border-0">
+                        <div class="card-body">
+                            <h6 class="fw-bold text-truncate">${model.modelId.split('/').pop()}</h6>
+                            <p class="small text-muted mb-0">📥 ${model.downloads.toLocaleString()}</p>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    } catch (e) { console.error(e); }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("🏵️ AIBloom: Оранжерея готова к работе!");
@@ -63,6 +137,38 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Логика фильтрации (связь фильтров с API)
+    const filterForm = document.getElementById('filterForm');
+    const searchBtn = document.getElementById('searchBtn');
+
+    const applyFilters = (e) => {
+        if (e) e.preventDefault();
+        let tags = [];
+        let filterQuery = "";
+
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput && searchInput.value) filterQuery += `&search=${encodeURIComponent(searchInput.value)}`;
+
+        const task = document.getElementById('taskSelect').value;
+        if (task) tags.push(task);
+
+        const license = document.getElementById('licenseSelect').value;
+        if (license) tags.push(`license:${license}`);
+
+        document.querySelectorAll('.fw-check:checked').forEach(check => tags.push(check.value));
+
+        if (tags.length > 0) filterQuery += `&filter=${tags.join(',')}`;
+        loadModels(filterQuery);
+    };
+
+    if (filterForm) filterForm.addEventListener('submit', applyFilters);
+    if (searchBtn) searchBtn.addEventListener('click', applyFilters);
+
+    // загрузка данных при старте
+    loadModels();
+    loadHuggingFaceTrends();
+
 
     // Логика модального окна загрузки
     const uploadForm = document.getElementById('uploadForm');
