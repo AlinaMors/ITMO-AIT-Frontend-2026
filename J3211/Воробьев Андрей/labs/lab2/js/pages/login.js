@@ -25,6 +25,9 @@ function login(event) {
 
     showModal("Добро пожаловать", "Вы успешно вошли в систему.");
 
+    localStorage.accessToken = "mock_token_" + Date.now();
+    localStorage.user = JSON.stringify({ email: loginData.email });
+
     setTimeout(() => {
         window.location.href = "account.html";
     }, 1500);
