@@ -1,26 +1,27 @@
 import {showModal} from "../core/modal.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+function forgotPassword(event) {
+    event.preventDefault();
 
-    const form = document.querySelector("form");
-    if (!form) return;
+    const formData = new FormData(event.target);
+    const forgotData = {};
 
-    form.addEventListener("submit", (event) => {
-        event.preventDefault();
-
-        const email = document.getElementById("ForgotPasswordEmail").value.trim();
-
-        const ADMIN_EMAIL = "admin@admin.com";
-
-        if (email !== ADMIN_EMAIL) {
-            showModal("Ошибка", "Аккаунт с таким email не найден.");
-            return;
-        }
-
-        showModal("Письмо отправлено", "Инструкции по восстановлению пароля отправлены на email.");
-
-        setTimeout(() => {
-            window.location.href = "index.html";
-        }, 1500);
+    formData.forEach((value, label) => {
+        forgotData[label] = value
     });
-});
+
+    const ADMIN_EMAIL = "admin@admin.com";
+
+    if (forgotData.email !== ADMIN_EMAIL) {
+        showModal("Ошибка", "Аккаунт с таким email не найден.");
+        return;
+    }
+
+    showModal("Письмо отправлено", "Инструкции по восстановлению пароля отправлены на email.");
+
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 1500);
+}
+
+window.forgotPassword = forgotPassword;

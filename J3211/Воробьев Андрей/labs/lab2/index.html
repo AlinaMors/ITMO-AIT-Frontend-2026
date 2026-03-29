@@ -42,14 +42,14 @@
             <div class="card shadow-sm">
                 <div class="card-body p-4">
                     <h2 class="card-title text-center mb-4">Вход в аккаунт</h2>
-                    <form>
+                    <form onsubmit="login(event)">
                         <div class="mb-3">
-                            <label for="InputEmail" class="form-label">Email адрес</label>
-                            <input type="email" class="form-control" id="InputEmail" required>
+                            <label for="email" class="form-label">Email адрес</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                         <div class="mb-3">
-                            <label for="InputPassword" class="form-label">Пароль</label>
-                            <input type="password" class="form-control" id="InputPassword" required>
+                            <label for="password" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
                         </div>
                         <div class="d-flex justify-content-end mb-3">
                             <a href="forgot_password.html" class="small text-decoration-none">Забыли пароль?</a>

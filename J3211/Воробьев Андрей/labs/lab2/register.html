@@ -29,18 +29,18 @@
             <div class="card shadow-sm">
                 <div class="card-body p-4">
                     <h2 class="card-title text-center mb-4">Регистрация</h2>
-                    <form>
+                    <form onsubmit="register(event)">
                         <div class="mb-3">
-                            <label for="RegisterEmail" class="form-label">Email адрес</label>
-                            <input type="email" class="form-control" id="RegisterEmail" required>
+                            <label for="email" class="form-label">Email адрес</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                         <div class="mb-3">
-                            <label for="RegisterPassword" class="form-label">Пароль</label>
-                            <input type="password" class="form-control" id="RegisterPassword" required>
+                            <label for="password" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="password" name="password" autocomplete="off" required>
                         </div>
                         <div class="mb-3">
-                            <label for="RegisterConfirmPassword" class="form-label">Подтверждение пароля</label>
-                            <input type="password" class="form-control" id="RegisterConfirmPassword" required>
+                            <label for="confirmPassword" class="form-label">Подтверждение пароля</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" autocomplete="off" required>
                         </div>
                         <div class="d-grid gap-4">
                             <button type="submit" class="btn btn-primary btn-custom">Зарегистрироваться</button>

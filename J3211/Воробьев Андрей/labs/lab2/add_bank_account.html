@@ -52,10 +52,10 @@
                 <div class="card-body p-4">
                     <h2 class="card-title text-center mb-4">Ручной учёт</h2>
                     <p class="text-muted text-center">Вы сами заносите все операции.</p>
-                    <form>
+                    <form onsubmit="submitManualAccount(event)">
                         <div class="mb-3">
-                            <label for="ManualAccountName" class="form-label">Название счёта</label>
-                            <input type="text" class="form-control" id="ManualAccountName" required>
+                            <label for="manualAccountName" class="form-label">Название счёта</label>
+                            <input type="text" class="form-control" id="manualAccountName" name="accountName" required>
                         </div>
                         <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-primary btn-custom">Создать счёт</button>
@@ -70,14 +70,14 @@
                 <div class="card-body p-4">
                     <h2 class="card-title text-center mb-4">Автоматизация</h2>
                     <p class="text-muted text-center">Безопасный импорт транзакций из вашего банка.</p>
-                    <form>
+                    <form onsubmit="submitApiAccount(event)">
                         <div class="mb-3">
-                            <label for="ApiAccountName" class="form-label">Название счёта</label>
-                            <input type="text" class="form-control" id="ApiAccountName" required>
+                            <label for="apiAccountName" class="form-label">Название счёта</label>
+                            <input type="text" class="form-control" id="apiAccountName" name="accountName" required>
                         </div>
                         <div class="mb-3">
                             <label for="ApiKey" class="form-label">API Ключ</label>
-                            <input type="password" class="form-control" id="ApiKey" required>
+                            <input type="password" class="form-control" id="ApiKey" name="apiKey" autocomplete="off" required>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-custom">Подключить по API</button>

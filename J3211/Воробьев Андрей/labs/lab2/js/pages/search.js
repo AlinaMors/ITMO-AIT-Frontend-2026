@@ -1,5 +1,23 @@
 import { showModal } from "../core/modal.js";
 
+function filterTransactions(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const filterData = {};
+
+    formData.forEach((value, label) => {
+        filterData[label] = value;
+    });
+
+    showModal(
+        "Поиск",
+        `Фильтрация в разработке. Период: ${filterData.period}, категория: ${filterData.category}, счёт: ${filterData.account}.`
+    );
+}
+
+window.filterTransactions = filterTransactions;
+
 document.addEventListener("DOMContentLoaded", () => {
     const addBtn = document.getElementById("addTransactionBtn");
     if (addBtn) {
@@ -15,11 +33,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const filterForm = document.getElementById("filterForm");
-    if (filterForm) {
-        filterForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            showModal("Поиск", "Функционал фильтрации в разработке.");
-        });
-    }
 });

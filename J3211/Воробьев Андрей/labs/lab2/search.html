@@ -51,11 +51,11 @@
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body p-4">
-            <form class="row g-3" id="filterForm">
-                <div class="col-md-4">
-                    <label class="form-label small fw-bold">Период</label>
+            <form class="row g-3" id="filterForm" onsubmit="filterTransactions(event)">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold me-2">Период</label>
                     <label>
-                        <select class="form-select">
+                        <select class="form-select" name="period">
                             <option>Март 2026</option>
                             <option>Февраль 2026</option>
                             <option>Весь период</option>
@@ -63,9 +63,9 @@
                     </label>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small fw-bold">Категория</label>
+                    <label class="form-label fw-bold me-2">Категория</label>
                     <label>
-                        <select class="form-select">
+                        <select class="form-select" name="category">
                             <option>Все категории</option>
                             <option>Продукты</option>
                             <option>Зарплата</option>
@@ -74,9 +74,9 @@
                     </label>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small fw-bold">Счёт</label>
+                    <label class="form-label fw-bold me-2">Счёт</label>
                     <label>
-                        <select class="form-select">
+                        <select class="form-select" name="account">
                             <option>Все счета</option>
                             <option>Основная карта</option>
                             <option>Наличные</option>
