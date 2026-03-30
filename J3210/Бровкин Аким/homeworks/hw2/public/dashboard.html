@@ -56,8 +56,9 @@
                 const courseListRow = document.getElementById('courseListRow');
                 courseListRow.innerHTML = '';
 
-                const enrolledCourses = allCourses.filter(course => userData.myCourses.includes(course.id));
-
+                const userCourses = userData.myCourses || [];
+                const enrolledCourses = allCourses.filter(course => userCourses.includes(course.id));
+                
                 enrolledCourses.forEach(course => {
                     const cardHtml = `
                         <div class="col-md-6 mb-4">
