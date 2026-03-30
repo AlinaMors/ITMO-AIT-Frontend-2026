@@ -1,6 +1,7 @@
 import {showModal} from "../core/modal.js";
+import {registerUser} from "../core/api.js";
 
-function register(event) {
+async function register(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
@@ -10,7 +11,7 @@ function register(event) {
         registerData[label] = value
     });
 
-    if ((registerData.password || "").length < 6) {
+    if (registerData.password.length < 6) {
         showModal("Ошибка", "Пароль должен содержать минимум 6 символов.");
         return;
     }
@@ -20,11 +21,17 @@ function register(event) {
         return;
     }
 
-    showModal("Регистрация успешна", `Аккаунт ${registerData.email} был бы создан.`);
+    try {
+        await registerUser(registerData.email, registerData.password);
 
-    setTimeout(() => {
-        window.location.href = "index.html";
-    }, 1500);
+        showModal("Регистрация успешна", `Аккаунт ${registerData.email} создан.`);
+
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 900);
+    } catch (error) {
+        showModal("Ошибка", error.message);
+    }
 }
 
 window.register = register;

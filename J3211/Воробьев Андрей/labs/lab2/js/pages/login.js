@@ -1,6 +1,8 @@
 import {showModal} from "../core/modal.js";
+import {loginUser} from "../core/api.js";
+import {setSession} from "../core/auth.js";
 
-function login(event) {
+async function login(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
@@ -10,27 +12,22 @@ function login(event) {
         loginData[label] = value
     });
 
-    const ADMIN_EMAIL = "admin@admin.com";
-    const ADMIN_PASSWORD = "admin";
+    try {
+        const user = await loginUser(loginData.email, loginData.password);
 
-    if (loginData.email !== ADMIN_EMAIL) {
-        showModal("Ошибка входа", "Аккаунт с таким email не найден.");
-        return;
+        setSession({
+            id: user.id,
+            email: user.email
+        });
+
+        showModal("Добро пожаловать", "Вы успешно вошли в систему.");
+
+        setTimeout(() => {
+            window.location.href = "account.html";
+        }, 900);
+    } catch (error) {
+        showModal("Ошибка", error.message);
     }
-
-    if (loginData.password !== ADMIN_PASSWORD) {
-        showModal("Ошибка входа", "Неверный пароль.");
-        return;
-    }
-
-    showModal("Добро пожаловать", "Вы успешно вошли в систему.");
-
-    localStorage.accessToken = "mock_token_" + Date.now();
-    localStorage.user = JSON.stringify({ email: loginData.email });
-
-    setTimeout(() => {
-        window.location.href = "account.html";
-    }, 1500);
 }
 
 window.login = login;

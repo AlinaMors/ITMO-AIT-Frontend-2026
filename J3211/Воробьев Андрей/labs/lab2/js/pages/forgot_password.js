@@ -1,6 +1,7 @@
 import {showModal} from "../core/modal.js";
+import {findUserByEmail} from "../core/api.js";
 
-function forgotPassword(event) {
+async function forgotPassword(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
@@ -10,18 +11,22 @@ function forgotPassword(event) {
         forgotData[label] = value
     });
 
-    const ADMIN_EMAIL = "admin@admin.com";
+    try {
+        const user = await findUserByEmail(forgotData.email);
 
-    if (forgotData.email !== ADMIN_EMAIL) {
-        showModal("Ошибка", "Аккаунт с таким email не найден.");
-        return;
+        if (!user) {
+            showModal("Ошибка", "Аккаунт с таким email не найден.");
+            return;
+        }
+
+        showModal("Письмо отправлено", "Инструкции по восстановлению пароля отправлены на email.");
+
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 900);
+    } catch (error) {
+        showModal("Ошибка", error.message);
     }
-
-    showModal("Письмо отправлено", "Инструкции по восстановлению пароля отправлены на email.");
-
-    setTimeout(() => {
-        window.location.href = "index.html";
-    }, 1500);
 }
 
 window.forgotPassword = forgotPassword;
