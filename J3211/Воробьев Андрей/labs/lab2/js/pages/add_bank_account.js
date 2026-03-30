@@ -1,6 +1,8 @@
-import { showModal } from "../core/modal.js";
+import {showModal} from "../core/modal.js";
+import {createAccount} from "../core/api.js";
+import {getCurrentUser} from "../core/auth.js";
 
-function submitManualAccount(event) {
+async function submitManualAccount(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
@@ -10,20 +12,46 @@ function submitManualAccount(event) {
         accountData[label] = value
     });
 
-    showModal("Уведомление", `Счёт ${accountData.accountName} будет создан в ручном режиме.`);
+    const user = getCurrentUser();
+
+    try {
+        await createAccount({
+            userId: user.id, accountName: accountData.accountName, type: "manual"
+        });
+        showModal("Уведомление", `Счёт ${accountData.accountName} создан.`);
+        setTimeout(() => {
+            location.reload();
+        }, 700);
+    } catch (error) {
+        showModal("Ошибка", error.message);
+    }
 }
 
-function submitApiAccount(event) {
+async function submitApiAccount(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
     const accountData = {};
 
     formData.forEach((value, label) => {
-        accountData[label] = value
+        accountData[label] = value;
     });
 
-    showModal("Уведомление", `Счёт ${accountData.accountName} будет подключен по API.`);
+    const user = getCurrentUser();
+
+    try {
+        await createAccount({
+            userId: user.id,
+            accountName: accountData.accountName,
+            type: "api"
+        });
+        showModal("Уведомление", `Счёт ${accountData.accountName} подключен по API.`);
+        setTimeout(() => {
+            location.reload();
+        }, 700);
+    } catch (error) {
+        showModal("Ошибка", error.message);
+    }
 }
 
 window.submitManualAccount = submitManualAccount;

@@ -84,6 +84,13 @@ export async function getTransactionsByFilter(userId, filters) {
     if (filters.category && filters.category !== "Все категории") {
         params.append("category", filters.category);
     }
+    if (filters.account && filters.account !== "Все счета") {
+        const accounts = await getAccountsByUser(userId);
+        const account = accounts.find(acc => acc.name === filters.account);
+        if (account) {
+            params.append("accountId", account.id);
+        }
+    }
     return requestJson(`/transactions?${params.toString()}`);
 }
 

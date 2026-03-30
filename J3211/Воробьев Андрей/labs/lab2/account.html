@@ -26,19 +26,19 @@
         <div class="col-md-4">
             <div class="stat-card">
                 <small class="fw-bold">ДОХОДЫ</small>
-                <div class="fw-bold income-text mt-2">100 000 ₽</div>
+                <div class="fw-bold income-text mt-2" id="incomeValue">0 ₽</div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="stat-card">
                 <small class="fw-bold">РАСХОДЫ</small>
-                <div class="fw-bold expense-text mt-2">50 000 ₽</div>
+                <div class="fw-bold expense-text mt-2" id="expenseValue">0 ₽</div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="stat-card profit-balance-card">
+            <div class="stat-card balance-card">
                 <small class="fw-bold">БАЛАНС</small>
-                <div class="fw-bold mt-2">50 000 ₽</div>
+                <div class="fw-bold mt-2" id="balanceValue">0 ₽</div>
             </div>
         </div>
     </div>
@@ -49,24 +49,7 @@
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">Мои счета</h5>
                     <div class="accounts-list-container mb-3">
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                                <div>
-                                    <span class="fw-bold">Основная карта</span><br>
-                                </div>
-                                <div class="text-end">
-                                    <div class="fw-bold income-text">+ 75 000 ₽</div>
-                                </div>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                                <div>
-                                    <span class="fw-bold">Наличные</span>
-                                </div>
-                                <div class="text-end">
-                                    <div class="fw-bold expense-text">- 25 000 ₽</div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="list-group list-group-flush" id="accountsList"></div>
                     </div>
                     <div class="text-center mt-2">
                         <a href="add_bank_account.html" class="btn btn-outline-secondary btn-custom">
@@ -91,18 +74,9 @@
                                 <th class="text-end">Сумма</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="recentTransactionsBody">
                             <tr>
-                                <td>15.03.2026</td>
-                                <td>Продукты</td>
-                                <td><span class="badge bg-light text-dark border">Наличные</span></td>
-                                <td class="text-end text-danger fw-bold">- 25 000 ₽</td>
-                            </tr>
-                            <tr>
-                                <td>14.03.2026</td>
-                                <td>Зарплата</td>
-                                <td><span class="badge bg-light text-dark border">Основная карта</span></td>
-                                <td class="text-end text-success fw-bold">+ 50 000 ₽</td>
+                                <td colspan="4" class="text-center text-muted">Загрузка...</td>
                             </tr>
                             </tbody>
                         </table>
@@ -124,6 +98,7 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
 <script type="module" src="js/core/includes.js"></script>
+<script type="module" src="js/pages/account.js"></script>
 
 </body>
 </html>
