@@ -6,10 +6,28 @@ async function initCoursePage() {
     const id = getCourseIdFromUrl();
     const titleEl = document.getElementById("courseTitlePage");
 
-    titleEl.textContent = "Загрузка курса...";
+    titleEl.textContent = "Проверка доступа...";
 
     if (!id) {
         renderCourseNotFound();
+        return;
+    }
+
+    const user = getUser();
+    if (user) {
+        try {
+            const enrolled = await isAlreadyEnrolled(user.id, id);
+            if (!enrolled) {
+                renderRestrictedAccess();
+                return;
+            }
+        } catch (err) {
+            console.error("Ошибка проверки записи:", err);
+            renderRestrictedAccess();
+            return;
+        }
+    } else {
+        renderRestrictedAccess();
         return;
     }
 
@@ -30,6 +48,33 @@ async function initCoursePage() {
     renderMaterials(currentCourseData.materials || []);
     renderTasks(currentCourseData.tasks || []);
     loadFirstLessonVideo(currentCourseData.lessons || []);
+
+    document.getElementById("lessonList").addEventListener("click", (e) => {
+        const lessonItem = e.target.closest(".lesson-item");
+        if (lessonItem) {
+            loadVideo(lessonItem.dataset.videoSrc, lessonItem);
+        }
+    });
+}
+
+function renderRestrictedAccess() {
+    document.getElementById("courseTitlePage").textContent = "Доступ ограничен";
+    document.getElementById("courseDescPage").textContent = "Для просмотра видео и материалов необходимо сначала записаться на этот курс в каталоге.";
+    
+    document.getElementById("videoPlayer").innerHTML = `
+        <div class="d-flex align-items-center justify-content-center h-100 bg-dark rounded-4 text-white flex-column">
+            <span style="font-size: 3rem;">🔒</span>
+            <p class="mt-2 mb-0">Доступ закрыт</p>
+        </div>`;
+        
+    document.querySelector(".nav-tabs").style.display = "none";
+    document.querySelector(".tab-content").style.display = "none";
+    
+    document.getElementById("courseLevelInfo").textContent = "—";
+    document.getElementById("courseSubjectInfo").textContent = "—";
+    document.getElementById("coursePriceInfo").textContent = "—";
+    document.getElementById("courseLessonsCount").textContent = "0";
+    document.title = "Доступ ограничен — Learnify";
 }
 
 function getCourseIdFromUrl() {
@@ -65,19 +110,13 @@ function renderLessons(lessons) {
 
     lessons.forEach((lesson, i) => {
         container.insertAdjacentHTML("beforeend", `
-            <li class="list-group-item lesson-item ${i === 0 ? 'active' : ''}" data-video-id="${lesson.videoId || ''}">
+            <li class="list-group-item lesson-item ${i === 0 ? 'active' : ''}" data-video-src="${lesson.videoId || ''}">
                 <div class="d-flex justify-content-between align-items-center">
                     <span>${lesson.title || "Урок"}</span>
                     <small class="${i === 0 ? 'text-white' : 'text-muted'}">${lesson.duration || ""}</small>
                 </div>
             </li>
         `);
-    });
-
-    document.querySelectorAll(".lesson-item").forEach(item => {
-        item.addEventListener("click", () => {
-            loadVideo(item.dataset.videoId, item);
-        });
     });
 }
 
@@ -145,12 +184,9 @@ function loadFirstLessonVideo(lessons) {
     loadVideo(lessons[0].videoId);
 }
 
-function loadVideo(videoId, activeItem = null) {
-    const iframe = document.querySelector("#videoPlayer iframe");
-    if (!iframe || !videoId) return;
-
-    const cleanId = extractYouTubeId(videoId);
-    iframe.src = `https://www.youtube.com/embed/${cleanId}?autoplay=1&rel=0`;
+function loadVideo(videoSrc, activeItem = null) {
+    const playerContainer = document.getElementById("videoPlayer");
+    if (!playerContainer || !videoSrc) return;
 
     if (activeItem) {
         document.querySelectorAll(".lesson-item").forEach(item => {
@@ -168,5 +204,22 @@ function loadVideo(videoId, activeItem = null) {
             small.classList.remove("text-muted");
             small.classList.add("text-white");
         }
+    }
+
+    const embedUrl = getVideoEmbedUrl(videoSrc);
+    playerContainer.innerHTML = "";
+
+    if (embedUrl.startsWith("DIRECT_VIDEO:")) {
+        const mp4Url = embedUrl.replace("DIRECT_VIDEO:", "");
+        playerContainer.innerHTML = `
+            <video controls autoplay style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-lg);">
+                <source src="${mp4Url}" type="video/mp4">
+            </video>`;
+    } else {
+        playerContainer.innerHTML = `
+            <iframe src="${embedUrl}" title="Видео курса" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen style="position: absolute; top:0; left:0; width:100%; height:100%; border:0;">
+            </iframe>`;
     }
 }

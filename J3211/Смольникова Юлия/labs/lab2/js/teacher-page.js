@@ -6,23 +6,18 @@ async function initTeacherPage() {
     const user = getUser();
     initForms();
 
-    document.getElementById("teacherCoursesList").innerHTML = `
-        <tr><td colspan="4" class="text-center py-4">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2 mb-0">Загрузка курсов...</p>
-        </td></tr>`;
+    const coursesContainer = document.getElementById("teacherCoursesList");
+    coursesContainer.innerHTML = `<tr><td colspan="4" class="text-center py-4">Загрузка...</td></tr>`;
 
     try {
-        const [allCourses, allEnrollments] = await Promise.all([
-            getCourses(),
-            getEnrollments()
+        const [coursesData, allEnrollments] = await Promise.all([
+            getCourses(1, 1000, { userId: user.id }),
+            apiRequest("/enrollments")
         ]);
 
-        const userIdStr = String(user.id);
-        const myCourses = allCourses.filter(c => String(c.teacherId) === userIdStr);
-
-        fillTeacherStats(myCourses, allEnrollments);
-        renderTeacherCourses(myCourses, allEnrollments);
+        const myCourses = coursesData.courses || [];
+        fillTeacherStats(myCourses, allEnrollments.data);
+        renderTeacherCourses(myCourses, allEnrollments.data);
         fillCourseSelects(myCourses);
     } catch (err) {
         console.error(err);
@@ -31,14 +26,13 @@ async function initTeacherPage() {
 }
 
 function fillTeacherStats(courses, enrollments) {
-    const courseIds = courses.map(c => c.id);
-    const studentIds = new Set();
+    const studentSet = new Set();
     enrollments.forEach(e => {
-        if (courseIds.includes(e.courseId)) studentIds.add(e.userId);
+        if (courses.find(c => c.id === e.courseId)) studentSet.add(e.userId);
     });
 
     document.getElementById("teacherCoursesCount").textContent = courses.length;
-    document.getElementById("teacherStudentsCount").textContent = studentIds.size;
+    document.getElementById("teacherStudentsCount").textContent = studentSet.size;
     document.getElementById("teacherActiveCoursesCount").textContent = courses.length;
 }
 
@@ -46,7 +40,7 @@ function renderTeacherCourses(courses, enrollments) {
     const container = document.getElementById("teacherCoursesList");
     container.innerHTML = "";
 
-    if (courses.length === 0) {
+    if (!courses.length) {
         container.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">У вас пока нет курсов</td></tr>`;
         return;
     }
@@ -78,43 +72,34 @@ function fillCourseSelects(courses) {
 function fillSelect(select, courses) {
     if (!select) return;
     select.innerHTML = `<option value="">Выберите курс</option>`;
-    courses.forEach(c => {
-        select.insertAdjacentHTML("beforeend", `<option value="${c.id}">${c.title}</option>`);
-    });
+    courses.forEach(c => select.insertAdjacentHTML("beforeend", `<option value="${c.id}">${c.title}</option>`));
 }
 
 function renderTeacherError() {
     document.getElementById("teacherCoursesCount").textContent = "0";
     document.getElementById("teacherStudentsCount").textContent = "0";
     document.getElementById("teacherActiveCoursesCount").textContent = "0";
-
-    const container = document.getElementById("teacherCoursesList");
-    container.innerHTML = `
-        <tr><td colspan="4" class="text-center text-danger py-4">
-            Не удалось загрузить данные<br>
-            <button onclick="location.reload()" class="btn btn-sm btn-outline-primary mt-2">Повторить</button>
-        </td></tr>`;
+    document.getElementById("teacherCoursesList").innerHTML = `<tr><td colspan="4" class="text-center text-danger py-4">Не удалось загрузить данные</td></tr>`;
 }
 
 function initForms() {
     const courseForm = document.getElementById("createCourseForm");
-    courseForm.addEventListener("submit", async (e) => {
+    courseForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const title = document.getElementById("newCourseTitle").value.trim();
         const subject = document.getElementById("newCourseSubject").value.trim();
         const desc = document.getElementById("newCourseDesc").value.trim();
+        const level = document.getElementById("newCourseLevel").value || "Новичок";
+        const price = Number(document.getElementById("newCoursePrice").value) || 0;
 
         if (title.length < 5) return alert("Название курса должно быть не короче 5 символов");
         if (!subject) return alert("Укажите предмет");
         if (desc.length < 15) return alert("Описание должно быть не короче 15 символов");
 
         const user = getUser();
-        const courseData = {
-            title, subject, level: document.getElementById("newCourseLevel").value,
-            price: Number(document.getElementById("newCoursePrice").value) || 0,
-            desc, teacherId: user.id, userId: user.id,
-            lessons: [], materials: [], tasks: []
+        const courseData = { 
+            title, subject, desc, userId: user.id, level, price,
+            lessons: [], materials: [], tasks: [] 
         };
 
         try {
@@ -126,63 +111,23 @@ function initForms() {
         }
     });
 
-    const editForm = document.getElementById("editCourseForm");
-    editForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const title = document.getElementById("editCourseTitle").value.trim();
-        const desc = document.getElementById("editCourseDesc").value.trim();
-
-        if (title.length < 5) return alert("Название должно быть не короче 5 символов");
-        if (desc.length < 15) return alert("Описание должно быть не короче 15 символов");
-
-        const courseId = document.getElementById("editCourseId").value;
-        const original = JSON.parse(editForm.dataset.originalData || "{}");
-
-        const courseData = {
-            ...original,
-            id: Number(courseId),
-            title,
-            subject: document.getElementById("editCourseSubject").value,
-            level: document.getElementById("editCourseLevel").value,
-            price: Number(document.getElementById("editCoursePrice").value) || 0,
-            desc
-        };
-
-        try {
-            await updateCourse(courseId, courseData);
-            alert("✅ Курс обновлён!");
-            location.reload();
-        } catch (err) {
-            alert("Ошибка обновления: " + err.message);
-        }
-    });
-
-    // === Добавление урока ===
     const lessonForm = document.getElementById("addLessonForm");
-    lessonForm.addEventListener("submit", async (e) => {
+    lessonForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const courseId = document.getElementById("lessonCourseSelect").value;
         if (!courseId) return alert("Выберите курс");
 
         const title = document.getElementById("lessonTitle").value.trim();
         const duration = document.getElementById("lessonDuration").value.trim();
-        const videoInput = document.getElementById("lessonVideoId").value.trim();
+        const videoUrl = document.getElementById("lessonVideoUrl").value.trim();
 
-        if (!title || title.length < 3) return alert("Введите название урока");
-        if (!duration) return alert("Укажите длительность");
-        if (!videoInput) return alert("Укажите YouTube ссылку или ID");
-
-        const finalVideoId = extractYouTubeId(videoInput);
+        if (!title || !duration || !videoUrl) return alert("Заполните все поля урока");
 
         try {
             const course = await getCourseById(courseId);
-            const newLesson = { title, duration, videoId: finalVideoId };
-
+            const newLesson = { title, duration, videoId: videoUrl };
             const updated = { ...course, lessons: [...(course.lessons || []), newLesson] };
             await updateCourse(courseId, updated);
-
             alert("✅ Урок добавлен!");
             lessonForm.reset();
             location.reload();
@@ -192,30 +137,50 @@ function initForms() {
     });
 
     const materialForm = document.getElementById("uploadMaterialForm");
-    materialForm.addEventListener("submit", async (e) => {
+    materialForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const courseId = document.getElementById("materialCourseSelect").value;
         if (!courseId) return alert("Выберите курс");
 
         const title = document.getElementById("materialTitle").value.trim();
         const link = document.getElementById("materialLink").value.trim();
-
-        if (!title) return alert("Введите название материала");
-        if (!link) return alert("Введите ссылку");
+        if (!title || !link) return alert("Заполните все поля материала");
 
         try {
             const course = await getCourseById(courseId);
             const newMaterial = { title, link };
-
             const updated = { ...course, materials: [...(course.materials || []), newMaterial] };
             await updateCourse(courseId, updated);
-
             alert("✅ Материал добавлен!");
             materialForm.reset();
             location.reload();
         } catch (err) {
             alert("Ошибка: " + err.message);
+        }
+    });
+
+    const editForm = document.getElementById("editCourseForm");
+    editForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const courseId = document.getElementById("editCourseId").value;
+        const originalData = JSON.parse(editForm.dataset.originalData || "{}");
+
+        const updatedData = {
+            ...originalData,
+            title: document.getElementById("editCourseTitle").value.trim(),
+            subject: document.getElementById("editCourseSubject").value.trim(),
+            level: document.getElementById("editCourseLevel").value,
+            price: Number(document.getElementById("editCoursePrice").value) || 0,
+            desc: document.getElementById("editCourseDesc").value.trim()
+        };
+
+        try {
+            await updateCourse(courseId, updatedData);
+            alert("✅ Курс успешно обновлен!");
+            bootstrap.Modal.getInstance(document.getElementById('editCourseModal')).hide();
+            location.reload();
+        } catch (err) {
+            alert("Ошибка обновления: " + err.message);
         }
     });
 }
@@ -226,12 +191,12 @@ async function openEditModal(courseId) {
         document.getElementById("editCourseId").value = course.id;
         document.getElementById("editCourseTitle").value = course.title;
         document.getElementById("editCourseSubject").value = course.subject || "";
-        document.getElementById("editCourseLevel").value = course.level || "";
+        document.getElementById("editCourseLevel").value = course.level || "Новичок";
         document.getElementById("editCoursePrice").value = course.price || 0;
         document.getElementById("editCourseDesc").value = course.desc || "";
 
         document.getElementById("editCourseForm").dataset.originalData = JSON.stringify({
-            teacherId: course.teacherId,
+            userId: course.userId,
             lessons: course.lessons || [],
             materials: course.materials || [],
             tasks: course.tasks || []

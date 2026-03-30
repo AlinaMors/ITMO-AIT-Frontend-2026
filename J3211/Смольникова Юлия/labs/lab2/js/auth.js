@@ -15,10 +15,10 @@ function initLoginForm() {
         const email = form.querySelector('[name="email"]').value.trim().toLowerCase();
         const password = form.querySelector('[name="password"]').value.trim();
 
-        clearError(errorBox);
+        hideMessage(errorBox);
 
         if (!email || !password) {
-            showError(errorBox, "Введите email и пароль");
+            showMessage(errorBox, "Введите email и пароль");
             return;
         }
 
@@ -26,11 +26,15 @@ function initLoginForm() {
             const data = await loginUser({ email, password });
 
             if (data.accessToken) saveToken(data.accessToken);
-            if (data.user) saveUser(data.user);
+
+            if (data.user) {
+                const { password, ...safeUserData } = data.user;
+                saveUser(safeUserData);
+            }
 
             redirectByRole(data.user?.role);
         } catch (err) {
-            showError(errorBox, err.message || "Неверный email или пароль");
+            showMessage(errorBox, err.message || "Неверный email или пароль");
         }
     });
 }
@@ -50,11 +54,11 @@ function initRegisterForm() {
         const password = form.querySelector('[name="password"]').value.trim();
         const role = form.querySelector('[name="role"]')?.value || "student";
 
-        clearError(errorBox);
-        clearSuccess(successBox);
+        hideMessage(errorBox);
+        hideMessage(successBox);
 
         if (!name || !email || !password) {
-            showError(errorBox, "Заполните все поля");
+            showMessage(errorBox, "Заполните все поля");
             return;
         }
 
@@ -62,12 +66,16 @@ function initRegisterForm() {
             const data = await registerUser({ name, email, password, role });
 
             if (data.accessToken) saveToken(data.accessToken);
-            if (data.user) saveUser(data.user);
 
-            showSuccess(successBox, "Регистрация успешна! Перенаправляем...");
+            if (data.user) {
+                const { password, ...safeUserData } = data.user;
+                saveUser(safeUserData);
+            }
+
+            showMessage(successBox, "Регистрация успешна! Перенаправляем...");
             setTimeout(() => redirectByRole(data.user?.role || role), 800);
         } catch (err) {
-            showError(errorBox, err.message || "Ошибка регистрации");
+            showMessage(errorBox, err.message || "Ошибка регистрации");
         }
     });
 }
@@ -76,25 +84,13 @@ function redirectByRole(role) {
     window.location.href = role === "teacher" ? "teacher.html" : "dashboard.html";
 }
 
-function showError(container, message) {
+function showMessage(container, message) {
     if (!container) return;
     container.textContent = message;
     container.style.display = "block";
 }
 
-function clearError(container) {
-    if (!container) return;
-    container.textContent = "";
-    container.style.display = "none";
-}
-
-function showSuccess(container, message) {
-    if (!container) return;
-    container.textContent = message;
-    container.style.display = "block";
-}
-
-function clearSuccess(container) {
+function hideMessage(container) {
     if (!container) return;
     container.textContent = "";
     container.style.display = "none";

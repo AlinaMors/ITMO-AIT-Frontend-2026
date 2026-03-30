@@ -6,7 +6,7 @@ function getUser() {
     if (!raw) return null;
     try {
         return JSON.parse(raw);
-    } catch {
+    } catch (e) {
         localStorage.removeItem(USER_KEY);
         return null;
     }

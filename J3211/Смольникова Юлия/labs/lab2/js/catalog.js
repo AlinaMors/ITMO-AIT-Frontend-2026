@@ -3,7 +3,28 @@ const coursesPerPage = 6;
 let currentCourseList = [];
 let allCourses = [];
 
-document.addEventListener("DOMContentLoaded", initCatalogPage);
+document.addEventListener("DOMContentLoaded", () => {
+    initCatalogPage();
+    initEventDelegation();
+});
+
+function initEventDelegation() {
+    const container = document.getElementById("courseList");
+    container.addEventListener("click", (e) => {
+        const enrollBtn = e.target.closest(".btn-enroll-course");
+        if (enrollBtn) {
+            e.preventDefault();
+            handleEnroll(Number(enrollBtn.dataset.courseId));
+            return;
+        }
+
+        const previewBtn = e.target.closest(".btn-preview-course");
+        if (previewBtn) {
+            e.preventDefault();
+            openCoursePreview(e, Number(previewBtn.dataset.courseId));
+        }
+    });
+}
 
 async function initCatalogPage() {
     await loadCourses();
@@ -34,12 +55,12 @@ async function loadCourses() {
                 <div class="alert alert-danger text-center p-4">
                     <h5>Не удалось загрузить курсы</h5>
                     <p class="mb-3">${err.message || "Проверьте подключение к серверу"}</p>
-                    <button onclick="loadCourses()" class="btn btn-outline-custom btn-sm">
-                        Повторить попытку
-                    </button>
+                    <button class="btn btn-outline-custom btn-sm" id="retryLoadBtn">Повторить попытку</button>
                 </div>
             </div>`;
         if (pagination) pagination.innerHTML = "";
+        
+        document.getElementById("retryLoadBtn")?.addEventListener("click", loadCourses);
     }
 }
 
@@ -80,12 +101,17 @@ function createCourseCard(course) {
     const price = Number(course.price) > 0 ? `${course.price} ₽` : "Бесплатно";
     const isAuth = isAuthenticated();
 
+    // ИСПРАВЛЕНО: Убраны inline onclick, добавлены data-атрибуты и классы для делегирования
     const detailsAction = isAuth
-        ? `href="course.html?id=${course.id}"`
-        : `href="#" onclick="openCoursePreview(event, ${course.id})"`;
+        ? `<a href="course.html?id=${course.id}" class="btn btn-outline-custom btn-sm flex-fill me-2">Подробнее</a>`
+        : `<a href="#" class="btn btn-outline-custom btn-sm flex-fill me-2 btn-preview-course" data-course-id="${course.id}">Подробнее</a>`;
+
+    const enrollAction = isAuth
+        ? `<button class="btn btn-primary-custom btn-sm flex-fill btn-enroll-course" data-course-id="${course.id}">Записаться</button>`
+        : ``;
 
     return `
-        <div class="col-md-6 col-xl-4 mb-4">
+        <article class="col-md-6 col-xl-4 mb-4">
             <div class="card course-card h-100 shadow-sm">
                 <div class="card-category-bar"></div>
                 <div class="card-body d-flex flex-column">
@@ -97,26 +123,15 @@ function createCourseCard(course) {
                     <p class="course-description flex-grow-1">${course.desc || "Описание отсутствует"}</p>
                     
                     <div class="course-actions mt-auto">
-                        <a ${detailsAction} 
-                           class="btn btn-outline-custom btn-sm flex-fill ${isAuth ? 'me-2' : ''}">
-                            Подробнее
-                        </a>
-                        ${isAuth
-            ? `<button onclick="handleEnroll(${course.id})" 
-                                    class="btn btn-primary-custom btn-sm flex-fill">
-                                    Записаться
-                               </button>`
-            : ``
-        }
+                        ${detailsAction}
+                        ${enrollAction}
                     </div>
                 </div>
             </div>
-        </div>`;
+        </article>`;
 }
 
 function openCoursePreview(event, courseId) {
-    event.preventDefault();
-
     const course = allCourses.find(c => c.id === courseId);
     if (!course) return;
 
@@ -146,6 +161,12 @@ async function handleEnroll(courseId) {
     const user = getUser();
     if (!user) {
         alert("Сначала войдите в аккаунт");
+        return;
+    }
+
+    const course = allCourses.find(c => c.id === courseId);
+    if (course && Number(course.price) > 0) {
+        alert(`Этот курс платный (${course.price} ₽). Модуль оплаты временно недоступен.`);
         return;
     }
 

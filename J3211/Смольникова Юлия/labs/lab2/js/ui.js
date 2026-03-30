@@ -1,5 +1,15 @@
 document.addEventListener("DOMContentLoaded", renderNavbar);
 
+export function getVideoEmbedUrl(input) {
+    if (!input) return "";
+    input = input.trim();
+    if (input.endsWith(".mp4") || input.endsWith(".webm")) return "DIRECT_VIDEO:" + input;
+    const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([^#&?]*).*/;
+    const ytMatch = input.match(ytRegex);
+    if (ytMatch && ytMatch[5].length === 11) return `https://www.youtube.com/embed/${ytMatch[5]}?autoplay=1&rel=0`;
+    return input;
+}
+
 function renderNavbar() {
     const container = document.getElementById("navbar-container");
     if (!container) return;

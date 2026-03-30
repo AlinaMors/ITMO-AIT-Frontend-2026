@@ -8,8 +8,10 @@ const middlewares = jsonServer.defaults();
 app.db = router.db;
 
 const rules = auth.rewriter({
-    users: 664,
-    courses: 664
+    users: 600,
+    courses: 644,
+    enrollments: 600,
+    certificates: 600
 });
 
 app.use(middlewares);

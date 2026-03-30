@@ -17,7 +17,7 @@ async function initDashboardPage() {
         const enrollments = await getUserCourses(user.id);
         const courses = enrollments.map(e => e.course).filter(Boolean);
 
-        fillStats(courses);
+        fillStats(courses, enrollments);
         renderMyCourses(courses);
         renderCertificates([]);
     } catch (err) {
@@ -37,9 +37,11 @@ function fillUserInfo(user) {
     document.getElementById("topbarUserAvatar").textContent = avatar;
 }
 
-function fillStats(courses) {
+function fillStats(courses, enrollments) {
+    const finishedCount = enrollments ? enrollments.filter(e => e.completed).length : 0;
+    
     document.getElementById("profileCoursesCount").textContent = courses.length;
-    document.getElementById("profileFinishedCount").textContent = "0";
+    document.getElementById("profileFinishedCount").textContent = finishedCount;
     document.getElementById("profileCertificatesCount").textContent = "0";
 }
 
