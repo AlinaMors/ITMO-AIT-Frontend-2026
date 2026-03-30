@@ -1,6 +1,7 @@
+import { bindLogout, guardRoute } from "./auth.js";
+
 async function includeHTML(selector, url) {
     const element = document.querySelector(selector);
-    if (!element) return;
 
     try {
         const response = await fetch(url);
@@ -13,7 +14,7 @@ async function includeHTML(selector, url) {
 function setupPostLoginNavbar() {
     const user = JSON.parse(localStorage.user);
     const emailSpan = document.querySelector("#userEmail");
-    if (emailSpan) emailSpan.textContent = user.email;
+    emailSpan.textContent = user.email;
 
     const currentPage = window.location.pathname.split("/").pop().replace(".html", "");
 
@@ -23,9 +24,12 @@ function setupPostLoginNavbar() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.accessToken) { // Убрал переменную isLoggedIn
+    if (!guardRoute()) return;
+
+    if (localStorage.accessToken) {
         includeHTML("#postlogin-site-navbar", "fragments/postlogin_navbar.html").then(() => {
             setupPostLoginNavbar();
+            bindLogout();
         });
     } else {
         includeHTML("#prelogin-site-navbar", "fragments/prelogin_navbar.html");
