@@ -141,23 +141,27 @@
             const localUser = JSON.parse(localStorage.getItem('user'));
 
             try {
-                const userRes = await fetch(`http://localhost:3000/users/${localUser.id}`);
-                const userData = await userRes.json();
+            const userRes = await fetch(`http://localhost:3000/users/${localUser.id}`);
+            const userData = await userRes.json();
 
-                if (!userData.myCourses.includes(selectedCourseId)) {
-                    userData.myCourses.push(selectedCourseId);
+            const userCourses = userData.myCourses || [];
 
-                    await fetch(`http://localhost:3000/users/${localUser.id}`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ myCourses: userData.myCourses })
-                    });
+            if (!userCourses.includes(selectedCourseId)) {
+                userCourses.push(selectedCourseId);
 
-                    localStorage.setItem('user', JSON.stringify(userData));
-                    alert('Курс "' + selectedCourseTitle + '" добавлен в личный кабинет!');
-                } else {
-                    alert('Вы уже записаны на этот курс.');
-                }
+                await fetch(`http://localhost:3000/users/${localUser.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ myCourses: userCourses })
+                });
+
+                userData.myCourses = userCourses;
+                localStorage.setItem('user', JSON.stringify(userData));
+                alert('Курс "' + selectedCourseTitle + '" добавлен в личный кабинет!');
+            } else {
+                alert('Вы уже записаны на этот курс.');
+            }
+
                 myModal.hide();
             } catch (error) {
                 console.error('Ошибка:', error);
