@@ -5,8 +5,9 @@
   <title>InjectincoPlayground - Агенты</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="styles/main.css">
 </head>
-<body class="bg-light">
+<body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand text-warning" href="dashboard.html"><i class="bi bi-robot"></i> InjectincoPlayground</a>
@@ -16,7 +17,13 @@
           <li class="nav-item"><a class="nav-link active" href="agents.html">Агенты и Фильтры</a></li>
           <li class="nav-item"><a class="nav-link" href="main-chat.html">Симуляция</a></li>
         </ul>
-        <div class="text-light"><span id="username"></span><button onclick="logout()" class="btn btn-danger ms-3">Выход</button></div>
+        <div class="text-light d-flex align-items-center">
+          <span id="username"></span>
+          <button onclick="toggleTheme()" class="btn btn-outline-warning ms-3" id="theme-btn" aria-label="Сменить тему">
+            <i class="bi bi-moon"></i>
+          </button>
+          <button onclick="logout()" class="btn btn-danger ms-2">Выход</button>
+        </div>
       </div>
     </div>
   </nav>
@@ -69,70 +76,7 @@
     </div>
   </main>
 
-  <script>
-    let allAgents = [];
-
-    function checkAuth() {
-      if (!localStorage.accessToken) window.location.href = "login.html";
-      else document.getElementById('username').innerText = JSON.parse(localStorage.user).email;
-    }
-
-    function logout() { localStorage.clear(); window.location.href = "login.html"; }
-
-    async function loadAgents() {
-      const response = await fetch('http://localhost:8000/api/agents');
-      allAgents = await response.json();
-      renderAgents(allAgents);
-    }
-
-    function renderAgents(agents) {
-      const container = document.getElementById('agents-container');
-      container.innerHTML = '';
-      agents.forEach(agent => {
-        const color = agent.role === 'Attacker' ? 'text-danger' : 'text-info';
-        container.innerHTML += `
-          <div class="col-md-4 mb-3">
-            <div class="card h-100 border-0 shadow-sm text-center">
-              <div class="card-body">
-                <i class="bi ${agent.icon} ${color} fs-1"></i>
-                <h6>${agent.name}</h6>
-                <span class="badge ${agent.role === 'Attacker' ? 'bg-danger' : 'bg-info'}">${agent.role}</span>
-                <p class="small text-muted mt-2">${agent.description}</p>
-              </div>
-            </div>
-          </div>`;
-      });
-    }
-
-    function applyFilters() {
-      const role = document.getElementById('filterRole').value;
-      const aggro = parseFloat(document.getElementById('filterAggro').value);
-      const filtered = allAgents.filter(a => (role === 'Все' || a.role === role) && a.aggressiveness <= aggro);
-      renderAgents(filtered);
-    }
-
-    async function handleCreateAgent(event) {
-      event.preventDefault();
-      const formData = new FormData(event.target);
-      const data = Object.fromEntries(formData.entries());
-      data.aggressiveness = parseFloat(data.aggressiveness);
-
-      const response = await fetch('http://localhost:8000/api/agents', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      if (response.ok) {
-        event.target.reset();
-        loadAgents();
-      } else {
-        const errorDetail = await response.json();
-        alert("Ошибка: " + JSON.stringify(errorDetail.detail));
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => { checkAuth(); loadAgents(); });
-  </script>
+  <script src="js/theme.js"></script>
+  <script src="js/agents.js"></script>
 </body>
 </html>

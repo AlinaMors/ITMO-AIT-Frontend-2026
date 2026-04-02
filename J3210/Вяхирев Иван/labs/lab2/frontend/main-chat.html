@@ -6,8 +6,9 @@
   <title>InjectincoPlayground - Simulation</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="styles/main.css">
 </head>
-<body class="bg-light">
+<body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand text-warning" href="dashboard.html"><i class="bi bi-robot"></i> InjectincoPlayground</a>
@@ -16,7 +17,13 @@
           <li class="nav-item"><a class="nav-link" href="dashboard.html">Дашборд</a></li>
           <li class="nav-item"><a class="nav-link" href="agents.html">Агенты и Фильтры</a></li>
         </ul>
-        <div class="text-light"><span id="username"></span><button onclick="logout()" class="btn btn-danger ms-3">Выход</button></div>
+        <div class="text-light d-flex align-items-center">
+          <span id="username"></span>
+          <button onclick="toggleTheme()" class="btn btn-outline-warning ms-3" id="theme-btn" aria-label="Сменить тему">
+            <i class="bi bi-moon"></i>
+          </button>
+          <button onclick="logout()" class="btn btn-danger ms-2">Выход</button>
+        </div>
       </div>
     </div>
   </nav>
@@ -39,7 +46,7 @@
             <span>Live Simulation</span>
             <span id="status-indicator" class="badge bg-secondary">Idle</span>
           </div>
-          <div class="card-body bg-white shadow-inner" id="chat-box" style="height: 550px; overflow-y: auto; background-image: radial-gradient(#f0f0f0 1px, transparent 1px); background-size: 20px 20px;"></div>
+          <div class="card-body shadow-inner" id="chat-box" style="height: 550px; overflow-y: auto; background-image: radial-gradient(#808080 1px, transparent 1px); background-size: 20px 20px;"></div>
           <div class="card-footer">
             <form onsubmit="startSimulation(event)" class="input-group">
               <input type="text" id="chatInput" class="form-control" placeholder="Опишите ситуацию для агентов..." aria-label="Опишите ситуацию для агентов" required>
@@ -52,92 +59,7 @@
     </div>
   </main>
 
-  <script>
-    let chatHistory = [];
-    let blueAgents = [];
-    let redAgents = [];
-    let isSimulating = false;
-
-    function checkAuth() {
-      if (!localStorage.accessToken) window.location.href = "login.html";
-      else document.getElementById('username').innerText = JSON.parse(localStorage.user).email;
-    }
-
-    function logout() { localStorage.clear(); window.location.href = "login.html"; }
-
-    async function loadAgents() {
-      const res = await fetch('http://localhost:8000/api/agents');
-      const agents = await res.json();
-      blueAgents = agents.filter(a => a.role === 'Defender');
-      redAgents = agents.filter(a => a.role === 'Attacker');
-      blueAgents.forEach(a => document.getElementById('blue-list').innerHTML += `<p class="mb-1 small"><i class="bi ${a.icon} text-info"></i> ${a.name}</p>`);
-      redAgents.forEach(a => document.getElementById('red-list').innerHTML += `<p class="mb-1 small"><i class="bi ${a.icon} text-danger"></i> ${a.name}</p>`);
-    }
-
-    function appendMessage(sender, text, textColor, bgColor, align) {
-      const box = document.getElementById('chat-box');
-      const side = align === 'text-start' ? 'justify-content-start' : 'justify-content-end';
-      box.innerHTML += `<div class="d-flex ${side} mb-3"><div class="p-3 rounded-3 shadow-sm border ${bgColor}" style="max-width: 80%;"><strong class="${textColor} small">${sender}</strong><div class="mt-1">${text}</div></div></div>`;
-      box.scrollTop = box.scrollHeight;
-    }
-
-    async function startSimulation(event) {
-      event.preventDefault();
-      const text = document.getElementById('chatInput').value;
-      appendMessage('System Prompt', text, 'text-muted', 'bg-light', 'text-start');
-      chatHistory.push({ role: 'user', content: `Context: ${text}. Talk as humans.` });
-
-      document.getElementById('chatInput').value = '';
-      document.getElementById('chatInput').disabled = true;
-      document.getElementById('sendBtn').classList.add('d-none');
-      document.getElementById('stopBtn').classList.remove('d-none');
-      document.getElementById('status-indicator').className = 'badge bg-success';
-      document.getElementById('status-indicator').innerText = 'Running';
-
-      isSimulating = true;
-      runLoop();
-    }
-
-    async function runLoop() {
-      while(isSimulating) {
-        for (let agent of blueAgents) {
-            if (!isSimulating) break;
-            await turn(agent, 'text-info', 'bg-white', 'text-start');
-            await new Promise(r => setTimeout(r, 3000));
-        }
-        for (let agent of redAgents) {
-            if (!isSimulating) break;
-            await turn(agent, 'text-danger', 'bg-danger-subtle', 'text-end');
-            await new Promise(r => setTimeout(r, 3000));
-        }
-      }
-    }
-
-    async function turn(agent, textColor, bgColor, align) {
-        try {
-            const res = await fetch('http://localhost:8000/api/chat/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ agent_id: agent.id, history: chatHistory })
-            });
-            if (res.ok) {
-                const data = await res.json();
-                appendMessage(agent.name, data.content, textColor, bgColor, align);
-                chatHistory.push({ role: 'assistant', content: data.content });
-            }
-        } catch(e) { console.error(e); }
-    }
-
-    function stopSimulation() {
-      isSimulating = false;
-      document.getElementById('chatInput').disabled = false;
-      document.getElementById('sendBtn').classList.remove('d-none');
-      document.getElementById('stopBtn').classList.add('d-none');
-      document.getElementById('status-indicator').className = 'badge bg-warning text-dark';
-      document.getElementById('status-indicator').innerText = 'Stopped';
-    }
-
-    document.addEventListener('DOMContentLoaded', () => { checkAuth(); loadAgents(); });
-  </script>
+  <script src="js/theme.js"></script>
+  <script src="js/main-chat.js"></script>
 </body>
 </html>
