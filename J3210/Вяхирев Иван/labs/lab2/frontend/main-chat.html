@@ -11,7 +11,10 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-      <a class="navbar-brand text-warning" href="dashboard.html"><i class="bi bi-robot"></i> InjectincoPlayground</a>
+      <a class="navbar-brand text-warning" href="dashboard.html">
+        <svg class="icon me-1"><use href="assets/sprite.svg#robot"></use></svg>
+        InjectincoPlayground
+      </a>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto">
           <li class="nav-item"><a class="nav-link" href="dashboard.html">Дашборд</a></li>
@@ -20,7 +23,7 @@
         <div class="text-light d-flex align-items-center">
           <span id="username"></span>
           <button onclick="toggleTheme()" class="btn btn-outline-warning ms-3" id="theme-btn" aria-label="Сменить тему">
-            <i class="bi bi-moon"></i>
+            <svg class="icon"><use href="assets/sprite.svg#moon-fill"></use></svg>
           </button>
           <button onclick="logout()" class="btn btn-danger ms-2">Выход</button>
         </div>
@@ -51,7 +54,10 @@
             <form onsubmit="startSimulation(event)" class="input-group">
               <input type="text" id="chatInput" class="form-control" placeholder="Опишите ситуацию для агентов..." aria-label="Опишите ситуацию для агентов" required>
               <button class="btn btn-primary" id="sendBtn" type="submit">Запустить</button>
-              <button class="btn btn-danger d-none" id="stopBtn" type="button" onclick="stopSimulation()">Стоп</button>
+              <button class="btn btn-danger d-none" id="stopBtn" type="button" onclick="stopSimulation()">
+                <svg class="icon me-1"><use href="assets/sprite.svg#stop-fill"></use></svg>
+                Стоп
+              </button>
             </form>
           </div>
         </div>

@@ -18,8 +18,24 @@ async function loadAgents() {
   const agents = await res.json();
   blueAgents = agents.filter(a => a.role === 'Defender');
   redAgents = agents.filter(a => a.role === 'Attacker');
-  blueAgents.forEach(a => document.getElementById('blue-list').innerHTML += `<p class="mb-1 small"><i class="bi ${a.icon} text-info"></i> ${a.name}</p>`);
-  redAgents.forEach(a => document.getElementById('red-list').innerHTML += `<p class="mb-1 small"><i class="bi ${a.icon} text-danger"></i> ${a.name}</p>`);
+  
+  const blueList = document.getElementById('blue-list');
+  const redList = document.getElementById('red-list');
+  
+  blueAgents.forEach(a => {
+    blueList.innerHTML += `
+      <p class="mb-1 small">
+        <svg class="icon text-info me-1"><use href="assets/sprite.svg#shield"></use></svg>
+        ${a.name}
+      </p>`;
+  });
+  redAgents.forEach(a => {
+    redList.innerHTML += `
+      <p class="mb-1 small">
+        <svg class="icon text-danger me-1"><use href="assets/sprite.svg#radioactive"></use></svg>
+        ${a.name}
+      </p>`;
+  });
 }
 
 function appendMessage(sender, text, textColor, bgColor, align) {

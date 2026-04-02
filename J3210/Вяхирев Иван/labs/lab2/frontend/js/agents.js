@@ -20,12 +20,15 @@ function renderAgents(agents) {
   const container = document.getElementById('agents-container');
   container.innerHTML = '';
   agents.forEach(agent => {
-    const color = agent.role === 'Attacker' ? 'text-danger' : 'text-info';
+    const colorClass = agent.role === 'Attacker' ? 'text-danger' : 'text-info';
+    const iconId = agent.role === 'Attacker' ? '#radioactive' : '#shield';
     container.innerHTML += `
       <div class="col-md-4 mb-3">
         <div class="card h-100 border-0 shadow-sm text-center">
           <div class="card-body">
-            <i class="bi ${agent.icon} ${color} fs-1"></i>
+            <svg class="icon icon-lg ${colorClass} mb-3">
+              <use href="assets/sprite.svg${iconId}"></use>
+            </svg>
             <h6>${agent.name}</h6>
             <span class="badge ${agent.role === 'Attacker' ? 'bg-danger' : 'bg-info'}">${agent.role}</span>
             <p class="small text-muted mt-2">${agent.description}</p>

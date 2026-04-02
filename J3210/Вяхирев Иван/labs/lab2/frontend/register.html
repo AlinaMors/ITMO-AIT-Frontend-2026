@@ -12,7 +12,8 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand text-warning" href="dashboard.html">
-        <i class="bi bi-robot"></i> InjectincoPlayground
+        <svg class="icon me-1"><use href="assets/sprite.svg#robot"></use></svg>
+        InjectincoPlayground
       </a>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto">
@@ -24,7 +25,7 @@
           <a href="login.html" class="btn btn-light">Вход</a>
           <a href="register.html" class="btn btn-primary active ms-2">Регистрация</a>
           <button onclick="toggleTheme()" class="btn btn-outline-warning ms-3" id="theme-btn" aria-label="Сменить тему">
-            <i class="bi bi-moon"></i>
+            <svg class="icon"><use href="assets/sprite.svg#moon-fill"></use></svg>
           </button>
         </div>
       </div>
@@ -36,7 +37,9 @@
       <div class="col-md-4">
         <div class="card shadow-sm">
           <div class="card-body text-center">
-            <i class="bi bi-person-plus text-primary fs-1"></i>
+            <svg class="icon icon-lg text-primary mb-3">
+              <use href="assets/sprite.svg#robot"></use>
+            </svg>
             <h3 class="mt-2 mb-4">Регистрация</h3>
             <form onsubmit="handleRegister(event)">
               <div class="mb-3 text-start">

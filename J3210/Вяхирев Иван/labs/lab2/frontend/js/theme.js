@@ -1,7 +1,10 @@
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  const btn = document.getElementById('theme-btn');
-  if (btn) btn.innerHTML = theme === 'dark' ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+  const themeIconUse = document.querySelector('#theme-btn use');
+  if (themeIconUse) {
+    const iconId = theme === 'dark' ? '#brightness-high-fill' : '#moon-fill';
+    themeIconUse.setAttribute('href', `assets/sprite.svg${iconId}`);
+  }
   localStorage.setItem('theme', theme);
 }
 

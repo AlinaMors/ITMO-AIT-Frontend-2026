@@ -37,3 +37,13 @@ body {
 .bg-light, .bg-white {
   background-color: var(--card-bg) !important;
 }
+.icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: middle;
+}
+.icon-lg {
+  width: 3rem;
+  height: 3rem;
+}
