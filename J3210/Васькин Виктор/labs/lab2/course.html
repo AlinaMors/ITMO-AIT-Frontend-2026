@@ -50,7 +50,7 @@
                 <div class="ratio ratio-16x9 rounded-4 overflow-hidden mb-5 border border-secondary shadow-lg">
                     <img src="" id="courseImg" alt="Обложка курса" class="object-fit-cover bg-dark">
                     <div class="d-flex justify-content-center align-items-center position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50">
-                        <button class="btn btn-neon rounded-circle d-flex justify-content-center align-items-center" style="width: 80px; height: 80px;"><span class="fs-1 ms-2">▶</span></button>
+                        <button class="btn btn-neon rounded-circle d-flex justify-content-center align-items-center" style="width: 80px; height: 80px;" aria-label="Воспроизвести видео-превью"><span class="fs-1 ms-2" aria-hidden="true">▶</span></button>
                     </div>
                 </div>
 
@@ -73,7 +73,8 @@
                         <div class="d-flex mb-4">
                             <img src="https://ui-avatars.com/api/?name=User+Name&background=334155&color=fff" class="rounded-circle me-3" width="48" height="48" alt="Аватар">
                             <div class="w-100">
-                                <textarea class="form-control bg-dark text-white border-secondary mb-2" rows="3" placeholder="Написать свой вопрос..."></textarea>
+                                <label for="reviewInput" class="visually-hidden">Ваш вопрос</label>
+                                <textarea id="reviewInput" class="form-control bg-dark text-white border-secondary mb-2" rows="3" placeholder="Написать свой вопрос..."></textarea>
                                 <button class="btn btn-sm btn-neon fw-bold px-4" onclick="alert('Ваш вопрос отправлен!')">Отправить</button>
                             </div>
                         </div>

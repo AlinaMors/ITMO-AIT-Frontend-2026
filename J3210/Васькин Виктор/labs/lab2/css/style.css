@@ -23,14 +23,15 @@ body {
 }
 
 .btn-neon {
-    background-color: #a855f7; 
+    background-color: #7e22ce;
     color: white;
     border: none;
     transition: all 0.3s ease;
 }
 
+
 .btn-neon:hover {
-    background-color: #9333ea;
+    background-color: #6b21a8;
     color: white;
     box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); 
     transform: translateY(-2px); 
@@ -139,4 +140,15 @@ body {
     background-color: #a855f7 !important;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+.visually-hidden { position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0,0,0,0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }
