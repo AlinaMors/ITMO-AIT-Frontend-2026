@@ -1,22 +1,11 @@
 document.addEventListener("DOMContentLoaded", renderNavbar);
 
-export function getVideoEmbedUrl(input) {
-    if (!input) return "";
-    input = input.trim();
-    if (input.endsWith(".mp4") || input.endsWith(".webm")) return "DIRECT_VIDEO:" + input;
-    const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([^#&?]*).*/;
-    const ytMatch = input.match(ytRegex);
-    if (ytMatch && ytMatch[5].length === 11) return `https://www.youtube.com/embed/${ytMatch[5]}?autoplay=1&rel=0`;
-    return input;
-}
-
 function renderNavbar() {
     const container = document.getElementById("navbar-container");
     if (!container) return;
 
     const user = getUser();
     const isAuth = isAuthenticated();
-    const isTeacher = user?.role === "teacher";
 
     const currentPage = window.location.pathname.split("/").pop() || "index.html";
 
@@ -31,15 +20,14 @@ function renderNavbar() {
                 <a class="nav-link ${isActive('index.html', currentPage)}" href="index.html">Главная</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link ${isActive('course.html', currentPage)}" href="index.html#courseList">Каталог</a>
+                <a class="nav-link ${isActive('catalog.html', currentPage)}" href="catalog.html">Каталог</a>
             </li>
             ${isAuth ? `
             <li class="nav-item">
                 <a class="nav-link ${isActive('dashboard.html', currentPage)}" href="dashboard.html">Моё обучение</a>
-            </li>` : ""}
-            ${isTeacher ? `
+            </li>
             <li class="nav-item">
-                <a class="nav-link ${isActive('teacher.html', currentPage)}" href="teacher.html">Преподаватель</a>
+                <a class="nav-link ${isActive('teacher.html', currentPage)}" href="teacher.html">Создать курс</a>
             </li>` : ""}
         </ul>
     `;
@@ -69,11 +57,27 @@ function renderNavbar() {
 }
 
 function isActive(linkHref, currentPage) {
-    if (linkHref === 'index.html' && (currentPage === 'index.html' || currentPage === '')) {
-        return 'active';
-    }
-    if (linkHref === currentPage) {
-        return 'active';
-    }
+    if (linkHref === 'index.html' && (currentPage === 'index.html' || currentPage === '')) return 'active';
+    if (linkHref === currentPage) return 'active';
     return '';
 }
+
+function getVideoEmbedUrl(input) {
+    if (!input) return "";
+    input = input.trim();
+
+    if (input.endsWith(".mp4") || input.endsWith(".webm")) {
+        return "DIRECT_VIDEO:" + input;
+    }
+
+    const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([^#&?]*).*/;
+    const ytMatch = input.match(ytRegex);
+
+    if (ytMatch && ytMatch[5].length === 11) {
+        return `https://www.youtube.com/embed/${ytMatch[5]}?autoplay=1&rel=0`;
+    }
+
+    return input;
+}
+
+window.getVideoEmbedUrl = getVideoEmbedUrl;

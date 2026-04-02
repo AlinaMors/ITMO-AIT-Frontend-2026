@@ -100,8 +100,6 @@ function renderCourses(list = []) {
 function createCourseCard(course) {
     const price = Number(course.price) > 0 ? `${course.price} ₽` : "Бесплатно";
     const isAuth = isAuthenticated();
-
-    // ИСПРАВЛЕНО: Убраны inline onclick, добавлены data-атрибуты и классы для делегирования
     const detailsAction = isAuth
         ? `<a href="course.html?id=${course.id}" class="btn btn-outline-custom btn-sm flex-fill me-2">Подробнее</a>`
         : `<a href="#" class="btn btn-outline-custom btn-sm flex-fill me-2 btn-preview-course" data-course-id="${course.id}">Подробнее</a>`;

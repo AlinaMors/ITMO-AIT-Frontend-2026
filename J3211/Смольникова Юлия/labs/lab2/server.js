@@ -8,10 +8,10 @@ const middlewares = jsonServer.defaults();
 app.db = router.db;
 
 const rules = auth.rewriter({
-    users: 600,
-    courses: 644,
-    enrollments: 600,
-    certificates: 600
+  users: 600,
+  courses: 632,
+  enrollments: 630,
+  certificates: 620
 });
 
 app.use(middlewares);
@@ -20,5 +20,5 @@ app.use(auth);
 app.use(router);
 
 app.listen(3000, () => {
-    console.log('JSON Server with Auth is running on http://localhost:3000');
+  console.log('JSON Server with Auth is running on http://localhost:3000');
 });

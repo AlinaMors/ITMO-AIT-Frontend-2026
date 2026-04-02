@@ -17,12 +17,15 @@ async function initCoursePage() {
     if (user) {
         try {
             const enrolled = await isAlreadyEnrolled(user.id, id);
-            if (!enrolled) {
+            currentCourseData = await getCourseById(id);
+            const isOwner = currentCourseData && currentCourseData.userId === user.id;
+            if (!enrolled && !isOwner) {
                 renderRestrictedAccess();
+                currentCourseData = null;
                 return;
             }
         } catch (err) {
-            console.error("Ошибка проверки записи:", err);
+            console.error("Ошибка проверки доступа:", err);
             renderRestrictedAccess();
             return;
         }
@@ -32,7 +35,9 @@ async function initCoursePage() {
     }
 
     try {
-        currentCourseData = await getCourseById(id);
+        if (!currentCourseData) {
+            currentCourseData = await getCourseById(id);
+        }
         if (!currentCourseData) {
             renderCourseNotFound();
             return;

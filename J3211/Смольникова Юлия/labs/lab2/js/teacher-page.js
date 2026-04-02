@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", initTeacherPage);
 
 async function initTeacherPage() {
-    if (!requireTeacher()) return;
+    if (!requireAuth()) return;
 
     const user = getUser();
     initForms();
@@ -10,14 +10,15 @@ async function initTeacherPage() {
     coursesContainer.innerHTML = `<tr><td colspan="4" class="text-center py-4">Загрузка...</td></tr>`;
 
     try {
-        const [coursesData, allEnrollments] = await Promise.all([
+        const [coursesData, allEnrollmentsRaw] = await Promise.all([
             getCourses(1, 1000, { userId: user.id }),
             apiRequest("/enrollments")
         ]);
 
         const myCourses = coursesData.courses || [];
-        fillTeacherStats(myCourses, allEnrollments.data);
-        renderTeacherCourses(myCourses, allEnrollments.data);
+        const allEnrollments = Array.isArray(allEnrollmentsRaw) ? allEnrollmentsRaw : (allEnrollmentsRaw.data || []);
+        fillTeacherStats(myCourses, allEnrollments);
+        renderTeacherCourses(myCourses, allEnrollments);
         fillCourseSelects(myCourses);
     } catch (err) {
         console.error(err);
@@ -56,8 +57,11 @@ function renderTeacherCourses(courses, enrollments) {
                 <td>${studentsCount}</td>
                 <td><span class="badge text-bg-success">Активный</span></td>
                 <td>
-                    <button onclick="openEditModal(${course.id})" class="btn btn-sm btn-outline-custom me-2">Изменить</button>
-                    <a href="course.html?id=${course.id}" class="btn btn-sm btn-outline-custom">Открыть</a>
+                    <div class="d-flex flex-wrap gap-1">
+                        <button onclick="openEditModal(${course.id})" class="btn btn-sm btn-outline-custom">Изменить</button>
+                        <a href="course.html?id=${course.id}" class="btn btn-sm btn-outline-custom">Открыть</a>
+                        <button onclick="confirmDeleteCourse(${course.id}, '${course.title.replace(/'/g, "\\'")}')" class="btn btn-sm btn-outline-danger">Удалить</button>
+                    </div>
                 </td>
             </tr>
         `);
@@ -97,9 +101,9 @@ function initForms() {
         if (desc.length < 15) return alert("Описание должно быть не короче 15 символов");
 
         const user = getUser();
-        const courseData = { 
+        const courseData = {
             title, subject, desc, userId: user.id, level, price,
-            lessons: [], materials: [], tasks: [] 
+            lessons: [], materials: [], tasks: []
         };
 
         try {
@@ -183,6 +187,20 @@ function initForms() {
             alert("Ошибка обновления: " + err.message);
         }
     });
+}
+
+async function confirmDeleteCourse(courseId, courseTitle) {
+    const confirmed = confirm(`Вы уверены, что хотите удалить курс «${courseTitle}»?\n\nВсе записи студентов на этот курс будут также удалены.\nДействие необратимо.`);
+    if (!confirmed) return;
+
+    try {
+        await deleteEnrollmentsByCourse(courseId);
+        await deleteCourse(courseId);
+        alert("Курс «" + courseTitle + "» удалён.");
+        location.reload();
+    } catch (err) {
+        alert("Ошибка при удалении курса: " + err.message);
+    }
 }
 
 async function openEditModal(courseId) {

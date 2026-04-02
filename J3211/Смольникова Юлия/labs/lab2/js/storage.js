@@ -35,7 +35,7 @@ function saveToken(token) {
 function logout() {
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(TOKEN_KEY);
-    window.location.href = "login.html";
+    window.location.href = "index.html";
 }
 
 function isAuthenticated() {
@@ -45,16 +45,6 @@ function isAuthenticated() {
 function requireAuth() {
     if (!isAuthenticated()) {
         window.location.href = "login.html";
-        return false;
-    }
-    return true;
-}
-
-function requireTeacher() {
-    if (!requireAuth()) return false;
-    const user = getUser();
-    if (user?.role !== "teacher") {
-        window.location.href = "dashboard.html";
         return false;
     }
     return true;

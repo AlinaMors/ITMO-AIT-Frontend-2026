@@ -41,6 +41,20 @@
       "name": "Ульяна",
       "role": "student",
       "id": 6
+    },
+    {
+      "email": "olezha204@gmail.com",
+      "password": "$2a$10$CvfrED/E1WWXZDik4xmbQuLLeqECRZ.MWpNcO5Izny4kW0f4i2f7i",
+      "name": "Oleg",
+      "role": "student",
+      "id": 7
+    },
+    {
+      "email": "sadovnikov@gmail.com",
+      "password": "$2a$10$7scBKedr9OJYb9AIIbDonugg9jRhaRTFDplfgR5OmoZS00zng2dGq",
+      "name": "Roman",
+      "role": "teacher",
+      "id": 8
     }
   ],
   "courses": [
@@ -50,7 +64,7 @@
       "subject": "Веб-разработка",
       "level": "Новичок",
       "price": 0,
-      "desc": "Полное руководство для начинающих: от верстки текста до создания адаптивных макетов. Идеальный старт для вашей карьеры в IT.",
+      "desc": "Полное руководство для начинающих: от верстки текста до создания адаптивных макетов.",
       "userId": 2,
       "lessons": [
         {
@@ -87,7 +101,7 @@
       "tasks": [
         {
           "title": "Сверстать личную страницу",
-          "deadline": "2024-12-31"
+          "deadline": "2026-04-02"
         }
       ]
     },
@@ -280,13 +294,5 @@
       "id": 6
     }
   ],
-  "certificates": [
-    {
-      "id": 1,
-      "userId": 3,
-      "courseId": 1,
-      "issuedAt": "2026-03-24",
-      "certificateId": "CERT-2026-001"
-    }
-  ]
+  "certificates": []
 }

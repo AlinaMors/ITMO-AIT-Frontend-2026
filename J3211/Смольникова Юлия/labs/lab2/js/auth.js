@@ -26,13 +26,12 @@ function initLoginForm() {
             const data = await loginUser({ email, password });
 
             if (data.accessToken) saveToken(data.accessToken);
-
             if (data.user) {
-                const { password, ...safeUserData } = data.user;
+                const { password: _, ...safeUserData } = data.user;
                 saveUser(safeUserData);
             }
 
-            redirectByRole(data.user?.role);
+            window.location.href = "dashboard.html";
         } catch (err) {
             showMessage(errorBox, err.message || "Неверный email или пароль");
         }
@@ -52,7 +51,6 @@ function initRegisterForm() {
         const name = form.querySelector('[name="name"]').value.trim();
         const email = form.querySelector('[name="email"]').value.trim().toLowerCase();
         const password = form.querySelector('[name="password"]').value.trim();
-        const role = form.querySelector('[name="role"]')?.value || "student";
 
         hideMessage(errorBox);
         hideMessage(successBox);
@@ -63,25 +61,27 @@ function initRegisterForm() {
         }
 
         try {
-            const data = await registerUser({ name, email, password, role });
+            const data = await registerUser({
+                name,
+                email,
+                password,
+                role: "student"
+            });
 
             if (data.accessToken) saveToken(data.accessToken);
-
             if (data.user) {
-                const { password, ...safeUserData } = data.user;
+                const { password: _, ...safeUserData } = data.user;
                 saveUser(safeUserData);
             }
 
-            showMessage(successBox, "Регистрация успешна! Перенаправляем...");
-            setTimeout(() => redirectByRole(data.user?.role || role), 800);
+            showMessage(successBox, "Регистрация успешна! Перенаправляем в личный кабинет...");
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 1000);
         } catch (err) {
             showMessage(errorBox, err.message || "Ошибка регистрации");
         }
     });
-}
-
-function redirectByRole(role) {
-    window.location.href = role === "teacher" ? "teacher.html" : "dashboard.html";
 }
 
 function showMessage(container, message) {
@@ -95,3 +95,9 @@ function hideMessage(container) {
     container.textContent = "";
     container.style.display = "none";
 }
+
+window.logout = function () {
+    localStorage.removeItem("learnify_token");
+    localStorage.removeItem("learnify_user");
+    window.location.href = "index.html";
+};

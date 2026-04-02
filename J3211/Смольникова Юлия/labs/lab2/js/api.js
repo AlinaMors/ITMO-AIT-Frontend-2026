@@ -1,83 +1,155 @@
-const API_URL = "http://localhost:3000";
+const API_BASE = "http://localhost:3000";
 
-async function apiRequest(path, options = {}, queryParams = {}) {
-    const token = localStorage.getItem("learnify_token");
-
+async function apiRequest(path, options = {}) {
+    const token = getToken();
     const headers = {
-        ...(options.body && !(options.body instanceof FormData) && { "Content-Type": "application/json" }),
-        ...(token && { "Authorization": `Bearer ${token}` }),
-        ...(options.headers || {})
+        "Content-Type": "application/json",
+        ...options.headers
     };
 
-    const url = new URL(`${API_URL}${path}`);
-    Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
 
-    try {
-        const response = await fetch(url, { ...options, headers });
-        if (response.status === 204) return null;
-        const data = await response.json().catch(() => null);
+    const response = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers
+    });
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                localStorage.removeItem("learnify_token");
-                localStorage.removeItem("learnify_user");
-                window.location.href = "login.html";
-            }
-            throw new Error(data?.message || `Ошибка ${response.status}`);
-        }
+    if (!response.ok) {
+        const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
+        error.status = response.status;
+        throw error;
+    }
 
-        return {
-            data,
-            totalCount: response.headers.get("x-total-count")
-        };
-    } catch (err) {
-        console.error("API Error:", err);
+    return response.json();
+}
+
+async function loginUser({ email, password }) {
+    const response = await fetch(`${API_BASE}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+    });
+
+    if (!response.ok) {
+        const err = new Error("Неверный email или пароль");
+        err.status = response.status;
         throw err;
+    }
+
+    return response.json();
+}
+
+async function registerUser({ name, email, password, role }) {
+    const response = await fetch(`${API_BASE}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role })
+    });
+
+    if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        const err = new Error(data.message || data.error || "Ошибка регистрации");
+        err.status = response.status;
+        throw err;
+    }
+
+    return response.json();
+}
+
+async function getCourses(page = 1, perPage = 100, filters = {}) {
+    let path = `/courses?_page=${page}&_limit=${perPage}`;
+
+    if (filters.userId) {
+        path += `&userId=${filters.userId}`;
+    }
+
+    if (filters.subject) {
+        path += `&subject=${encodeURIComponent(filters.subject)}`;
+    }
+
+    if (filters.level) {
+        path += `&level=${encodeURIComponent(filters.level)}`;
+    }
+
+    if (filters.search) {
+        path += `&q=${encodeURIComponent(filters.search)}`;
+    }
+
+    const data = await apiRequest(path);
+
+    if (Array.isArray(data)) {
+        return { courses: data, total: data.length };
+    }
+
+    return { courses: data.data || [], total: data.total || 0 };
+}
+
+async function getCourseById(id) {
+    return apiRequest(`/courses/${id}`);
+}
+
+async function createCourse(courseData) {
+    return apiRequest("/courses", {
+        method: "POST",
+        body: JSON.stringify(courseData)
+    });
+}
+
+async function updateCourse(id, courseData) {
+    return apiRequest(`/courses/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(courseData)
+    });
+}
+
+async function deleteCourse(id) {
+    return apiRequest(`/courses/${id}`, {
+        method: "DELETE"
+    });
+}
+
+async function deleteEnrollmentsByCourse(courseId) {
+    try {
+        const data = await apiRequest(`/enrollments?courseId=${courseId}`);
+        const list = Array.isArray(data) ? data : (data.data || []);
+        await Promise.all(list.map(e => apiRequest(`/enrollments/${e.id}`, { method: "DELETE" })));
+    } catch {
     }
 }
 
-export async function loginUser(credentials) {
-    const result = await apiRequest("/login", { method: "POST", body: JSON.stringify(credentials) });
-    return result.data;
+async function getUserCourses(userId) {
+    const [enrollmentsData, allCoursesData] = await Promise.all([
+        apiRequest(`/enrollments?userId=${userId}`),
+        apiRequest('/courses')
+    ]);
+
+    const enrollments = Array.isArray(enrollmentsData) ? enrollmentsData : (enrollmentsData.data || []);
+    const allCourses = Array.isArray(allCoursesData) ? allCoursesData : (allCoursesData.data || []);
+
+    const courseMap = {};
+    allCourses.forEach(c => { courseMap[c.id] = c; });
+
+    return enrollments.map(e => ({
+        ...e,
+        course: courseMap[e.courseId] || null
+    }));
 }
 
-export async function registerUser(userData) {
-    const result = await apiRequest("/register", { method: "POST", body: JSON.stringify(userData) });
-    return result.data;
+async function isAlreadyEnrolled(userId, courseId) {
+    try {
+        const data = await apiRequest(`/enrollments?userId=${userId}&courseId=${courseId}`);
+        const list = Array.isArray(data) ? data : (data.data || []);
+        return list.length > 0;
+    } catch {
+        return false;
+    }
 }
 
-export async function getCourses(page = 1, limit = 6, filters = {}) {
-    const queryParams = { _page: page, _limit: limit, ...filters };
-    const result = await apiRequest("/courses", {}, queryParams);
-    return { courses: result.data, total: result.totalCount };
-}
-
-export async function getCourseById(id) {
-    const result = await apiRequest(`/courses/${id}`);
-    return result.data;
-}
-
-export async function createCourse(courseData) {
-    const result = await apiRequest("/courses", { method: "POST", body: JSON.stringify(courseData) });
-    return result.data;
-}
-
-export async function updateCourse(id, courseData) {
-    const result = await apiRequest(`/courses/${id}`, { method: "PUT", body: JSON.stringify(courseData) });
-    return result.data;
-}
-
-export async function getUserCourses(userId) {
-    const result = await apiRequest(`/enrollments?userId=${userId}&_expand=course`);
-    return result.data;
-}
-
-export async function enrollCourse(enrollment) {
-    const result = await apiRequest("/enrollments", { method: "POST", body: JSON.stringify(enrollment) });
-    return result.data;
-}
-
-export async function isAlreadyEnrolled(userId, courseId) {
-    const result = await apiRequest(`/enrollments?userId=${userId}&courseId=${courseId}`);
-    return result.data && result.data.length > 0;
+async function enrollCourse(enrollmentData) {
+    return apiRequest("/enrollments", {
+        method: "POST",
+        body: JSON.stringify(enrollmentData)
+    });
 }
