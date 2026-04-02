@@ -27,7 +27,7 @@
     </div>
   </nav>
 
-  <div class="container mt-4">
+  <main class="container mt-4">
     <div class="row mb-4">
       <div class="col-6">
         <h2>Управление симуляциями</h2>
@@ -39,39 +39,39 @@
 
     <div class="row" id="simulations-container">
     </div>
-  </div>
+  </main>
 
-  <div class="modal fade" id="createModal" tabindex="-1">
+  <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Создать симуляцию</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <h5 class="modal-title" id="createModalLabel">Создать симуляцию</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
         </div>
         <div class="modal-body">
           <form onsubmit="createSimulation(event)">
             <div class="mb-3">
-              <label class="form-label">Название</label>
-              <input type="text" name="name" class="form-control" required>
+              <label class="form-label" for="simName">Название</label>
+              <input type="text" id="simName" name="name" class="form-control" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Статус</label>
-              <select name="status" class="form-select">
+              <label class="form-label" for="simStatus">Статус</label>
+              <select id="simStatus" name="status" class="form-select">
                 <option value="Активно">Активно</option>
                 <option value="Пауза">Приостановлено</option>
               </select>
             </div>
             <div class="mb-3">
-              <label class="form-label">Описание</label>
-              <input type="text" name="description" class="form-control" required>
+              <label class="form-label" for="simDescription">Описание</label>
+              <input type="text" id="simDescription" name="description" class="form-control" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Blue Team</label>
-              <input type="text" name="blue_team_name" class="form-control" required>
+              <label class="form-label" for="simBlueTeam">Blue Team</label>
+              <input type="text" id="simBlueTeam" name="blue_team_name" class="form-control" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Red Team</label>
-              <input type="text" name="red_team_name" class="form-control" required>
+              <label class="form-label" for="simRedTeam">Red Team</label>
+              <input type="text" id="simRedTeam" name="red_team_name" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary w-100">Создать</button>
           </form>

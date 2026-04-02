@@ -21,14 +21,14 @@
     </div>
   </nav>
 
-  <div class="container mt-4">
+  <main class="container mt-4">
     <div class="row">
       <aside class="col-md-3">
         <div class="card mb-3 shadow-sm">
           <div class="card-body">
             <h5>Фильтры</h5>
             <div class="mb-3">
-              <label class="form-label small">Роль</label>
+              <label class="form-label small" for="filterRole">Роль</label>
               <select id="filterRole" class="form-select form-select-sm">
                 <option value="Все">Все</option>
                 <option value="Attacker">Attacker</option>
@@ -36,7 +36,7 @@
               </select>
             </div>
             <div class="mb-3">
-              <label class="form-label small">Агрессия до (<span id="aggroVal">2.0</span>)</label>
+              <label class="form-label small" for="filterAggro">Агрессия до (<span id="aggroVal">2.0</span>)</label>
               <input type="range" id="filterAggro" class="form-range" min="0" max="2" step="0.1" value="2" oninput="document.getElementById('aggroVal').innerText=this.value">
             </div>
             <button class="btn btn-primary btn-sm w-100" onclick="applyFilters()">Применить</button>
@@ -47,15 +47,15 @@
           <div class="card-body">
             <h5>Новый агент</h5>
             <form onsubmit="handleCreateAgent(event)">
-              <input type="text" name="name" class="form-control form-control-sm mb-2" placeholder="Имя" required>
-              <select name="role" class="form-select form-select-sm mb-2">
+              <input type="text" name="name" class="form-control form-control-sm mb-2" placeholder="Имя" aria-label="Имя" required>
+              <select name="role" class="form-select form-select-sm mb-2" aria-label="Роль">
                 <option value="Attacker">Attacker</option>
                 <option value="Defender">Defender</option>
               </select>
-              <input type="text" name="description" class="form-control form-control-sm mb-2" placeholder="Промпт" required>
-              <input type="text" name="icon" class="form-control form-control-sm mb-2" value="bi-robot" required>
-              <input type="number" name="aggressiveness" class="form-control form-control-sm mb-2" step="0.1" value="0.5" required>
-              <input type="text" name="skills" class="form-control form-control-sm mb-2" placeholder="Навыки">
+              <input type="text" name="description" class="form-control form-control-sm mb-2" placeholder="Промпт" aria-label="Промпт" required>
+              <input type="text" name="icon" class="form-control form-control-sm mb-2" value="bi-robot" aria-label="Иконка" required>
+              <input type="number" name="aggressiveness" class="form-control form-control-sm mb-2" step="0.1" value="0.5" aria-label="Агрессивность" required>
+              <input type="text" name="skills" class="form-control form-control-sm mb-2" placeholder="Навыки" aria-label="Навыки">
               <button type="submit" class="btn btn-success btn-sm w-100">Создать</button>
             </form>
           </div>
@@ -67,7 +67,7 @@
         <div class="row" id="agents-container"></div>
       </div>
     </div>
-  </div>
+  </main>
 
   <script>
     let allAgents = [];

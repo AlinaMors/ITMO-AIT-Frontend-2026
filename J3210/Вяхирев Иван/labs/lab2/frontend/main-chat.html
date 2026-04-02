@@ -21,11 +21,11 @@
     </div>
   </nav>
 
-  <div class="container mt-4">
+  <main class="container mt-4">
     <div class="row">
       <div class="col-md-4">
         <div class="card mb-3 border-info shadow-sm">
-            <div class="card-header bg-info text-white">Blue Team</div>
+            <div class="card-header bg-info text-dark">Blue Team</div>
             <div class="card-body py-2" id="blue-list"></div>
         </div>
         <div class="card mb-3 border-danger shadow-sm">
@@ -42,7 +42,7 @@
           <div class="card-body bg-white shadow-inner" id="chat-box" style="height: 550px; overflow-y: auto; background-image: radial-gradient(#f0f0f0 1px, transparent 1px); background-size: 20px 20px;"></div>
           <div class="card-footer">
             <form onsubmit="startSimulation(event)" class="input-group">
-              <input type="text" id="chatInput" class="form-control" placeholder="Опишите ситуацию для агентов..." required>
+              <input type="text" id="chatInput" class="form-control" placeholder="Опишите ситуацию для агентов..." aria-label="Опишите ситуацию для агентов" required>
               <button class="btn btn-primary" id="sendBtn" type="submit">Запустить</button>
               <button class="btn btn-danger d-none" id="stopBtn" type="button" onclick="stopSimulation()">Стоп</button>
             </form>
@@ -50,7 +50,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </main>
 
   <script>
     let chatHistory = [];
