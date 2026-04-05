@@ -112,7 +112,7 @@ function renderCategoryBreakdown(stats) {
                     <span class="fw-bold">${formatMoney(amount)}</span>
                 </div>
                 <div class="progress">
-                    <div class="progress-bar ${color}" style="width: ${percent}%;"></div>
+                    <div class="progress-bar ${color}" style="width: ${percent}%;" role="progressbar" aria-label="${name}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}"></div>
                 </div>
             </div>
         `;
@@ -179,7 +179,7 @@ function renderMonthlyChart(periods) {
                 const height = Math.max(10, Math.round((item.expense / maxExpense) * 160));
                 return `
                     <div class="d-flex flex-column align-items-center flex-fill">
-                        <div class="w-100 bg-primary rounded" style="height: ${height}px;"></div>
+                        <div class="w-100 bg-primary rounded" style="height: ${height}px;" role="img" aria-label="${item.period}: ${formatMoney(item.expense)}"></div>
                         <small class="text-muted mt-2 text-center">${item.period.split(" ")[0]}</small>
                     </div>
                 `;

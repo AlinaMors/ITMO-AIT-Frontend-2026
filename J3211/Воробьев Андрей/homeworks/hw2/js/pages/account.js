@@ -14,7 +14,7 @@ function renderAccounts(accounts) {
     const list = document.querySelector("#accountsList");
 
     if (!accounts.length) {
-        list.innerHTML = '';
+        list.innerHTML = '<div class="list-group-item px-0 py-3 text-muted" role="status">Счета пока не добавлены.</div>';
         return;
     }
 
@@ -36,7 +36,7 @@ function renderRecentTransactions(transactions, accountsById) {
     const tableBody = document.querySelector("#recentTransactionsBody");
 
     if (!transactions.length) {
-        tableBody.innerHTML = '';
+        tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Операции пока отсутствуют.</td></tr>';
         return;
     }
 

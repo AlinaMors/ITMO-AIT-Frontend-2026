@@ -28,26 +28,30 @@
         <div class="col-12 col-lg-5">
             <div class="card shadow-sm">
                 <div class="card-body p-4">
-                    <h2 class="card-title text-center mb-4">Регистрация</h2>
-                    <form onsubmit="register(event)">
+                    <h2 class="card-title text-center mb-4" id="register-form-title">Регистрация</h2>
+                    <form onsubmit="register(event)" aria-labelledby="register-form-title">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email адрес</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input type="email" class="form-control" id="email" name="email" autocomplete="email"
+                                   required>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Пароль</label>
-                            <input type="password" class="form-control" id="password" name="password" autocomplete="off" required>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   autocomplete="new-password" required>
                         </div>
                         <div class="mb-3">
                             <label for="confirmPassword" class="form-label">Подтверждение пароля</label>
-                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" autocomplete="off" required>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                                   autocomplete="new-password" required>
                         </div>
                         <div class="d-grid gap-4">
                             <button type="submit" class="btn btn-primary btn-custom">Зарегистрироваться</button>
                         </div>
                         <div class="d-flex flex-column flex-sm-row align-items-center gap-3 mt-3 mx-sm-5">
                             <span class="mb-0 text-nowrap">Уже есть аккаунт?</span>
-                            <a href="index.html" class="btn btn-outline-secondary btn-custom flex-grow-1 w-100 w-sm-auto">
+                            <a href="index.html"
+                               class="btn btn-outline-secondary btn-custom flex-grow-1 w-100 w-sm-auto">
                                 Войти
                             </a>
                         </div>

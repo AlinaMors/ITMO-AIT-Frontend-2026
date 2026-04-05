@@ -26,7 +26,7 @@ function renderTransactions(rows) {
     const tableBody = document.querySelector("#transactionsTableBody");
 
     if (!rows.length) {
-        tableBody.innerHTML = '';
+        tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Транзакции по выбранному фильтру не найдены.</td></tr>';
         return;
     }
 

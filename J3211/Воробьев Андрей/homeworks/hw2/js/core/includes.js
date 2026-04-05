@@ -19,7 +19,13 @@ function setupPostLoginNavbar() {
     const currentPage = window.location.pathname.split("/").pop().replace(".html", "");
 
     document.querySelectorAll("[data-page]").forEach(link => {
-        link.classList.toggle("active", link.getAttribute("data-page") === currentPage);
+        const isCurrent = link.getAttribute("data-page") === currentPage;
+        link.classList.toggle("active", isCurrent);
+        if (isCurrent) {
+            link.setAttribute("aria-current", "page");
+        } else {
+            link.removeAttribute("aria-current");
+        }
     });
 }
 

@@ -9,18 +9,18 @@ export function showModal(title, message) {
     if (prev) prev.remove();
 
     const html = `
-    <div class="modal fade" id="mbe-modal" tabindex="-1">
+    <div class="modal fade" id="mbe-modal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="mbe-modal-title" aria-describedby="mbe-modal-description">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">${title}</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="mbe-modal-title">${title}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                 </div>
                 <div class="modal-body">
-                    <p>${message}</p>
+                    <p id="mbe-modal-description">${message}</p>
                 </div>
                 <div class="modal-footer">
-                   <button class="btn btn-primary fw-semibold"
+                    <button type="button" class="btn btn-primary fw-semibold"
                             data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
@@ -55,40 +55,40 @@ export function showTransactionForm(accounts, categories, callback) {
     const categoryOptions = categories.map(cat => `<option>${cat}</option>`).join("");
 
     const html = `
-    <div class="modal fade" id="mbe-modal" tabindex="-1">
+    <div class="modal fade" id="mbe-modal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="transaction-modal-title">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Добавить транзакцию</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="transaction-modal-title">Добавить транзакцию</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                 </div>
                 <form id="transactionForm">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Дата</label>
-                            <input type="date" name="date" class="form-control" value="${today}" required>
+                            <label class="form-label" for="transaction-date">Дата</label>
+                            <input type="date" id="transaction-date" name="date" class="form-control" value="${today}" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Категория</label>
-                            <select name="category" class="form-select" required>
+                            <label class="form-label" for="transaction-category">Категория</label>
+                            <select id="transaction-category" name="category" class="form-select" required>
                                 <option value="">Выберите категорию</option>
                                 ${categoryOptions}
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Счёт</label>
-                            <select name="accountId" class="form-select" required>
+                            <label class="form-label" for="transaction-account">Счёт</label>
+                            <select id="transaction-account" name="accountId" class="form-select" required>
                                 <option value="">Выберите счёт</option>
                                 ${accountOptions}
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Сумма</label>
-                            <input type="number" name="amount" class="form-control" step="0.01" required>
+                            <label class="form-label" for="transaction-amount">Сумма</label>
+                            <input type="number" id="transaction-amount" name="amount" class="form-control" step="0.01" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Комментарий</label>
-                            <input type="text" name="comment" class="form-control" placeholder="Опционально">
+                            <label class="form-label" for="transaction-comment">Комментарий</label>
+                            <input type="text" id="transaction-comment" name="comment" class="form-control" placeholder="Опционально">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -142,12 +142,12 @@ export function showRuleForm(settings, callback) {
     const current = settings || {};
 
     const html = `
-    <div class="modal fade" id="mbe-modal" tabindex="-1">
+    <div class="modal fade" id="mbe-modal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="rule-modal-title">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Настройки уведомлений</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="rule-modal-title">Настройки уведомлений</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                 </div>
                 <form id="ruleForm">
                     <div class="modal-body">
