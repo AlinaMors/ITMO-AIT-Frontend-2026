@@ -1,4 +1,5 @@
 import { bindLogout, guardRoute } from "./auth.js";
+import { bindThemeToggle, initTheme } from "./theme.js";
 
 async function includeHTML(selector, url) {
     const element = document.querySelector(selector);
@@ -30,15 +31,20 @@ function setupPostLoginNavbar() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+
     if (!guardRoute()) return;
 
     if (localStorage.accessToken) {
         includeHTML("#postlogin-site-navbar", "fragments/postlogin_navbar.html").then(() => {
             setupPostLoginNavbar();
             bindLogout();
+            bindThemeToggle();
         });
     } else {
-        includeHTML("#prelogin-site-navbar", "fragments/prelogin_navbar.html");
+        includeHTML("#prelogin-site-navbar", "fragments/prelogin_navbar.html").then(() => {
+            bindThemeToggle();
+        });
     }
 
     includeHTML("#site-footer", "fragments/footer.html");
