@@ -29,16 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cardHtml = `
                     <div class="col">
                         <div class="card course-card h-100 bg-dark text-white border-secondary rounded-4 overflow-hidden d-flex flex-column">
-                            <img src="${course.image}" class="card-img-top image-placeholder" alt="${course.title}">
+                            <img src="${course.image}" class="card-img-top image-placeholder" alt="Обложка курса: ${course.title}" loading="lazy">
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title fw-bold mb-1">${course.title}</h5>
-                                <div class="text-warning small mb-2">
-                                    ${stars} <span class="text-white-50 ms-1">(${course.reviews})</span>
+                                <h2 class="card-title h5 fw-bold mb-1">${course.title}</h2>
+                                <div class="text-warning small mb-2" aria-label="Рейтинг: ${course.rating} из 5">
+                                    <span aria-hidden="true">${stars}</span> <span class="text-white-50 ms-1">(${course.reviews})</span>
                                 </div>
                                 <p class="card-text text-white-50 small flex-grow-1">${course.desc}</p>
                                 <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
                                     <span class="fs-5 fw-bold ${priceClass}">${priceText}</span>
-                                    <a href="course.html?id=${course.id}" class="btn btn-sm ${btnClass} rounded-pill px-3 fw-bold">Подробнее</a>
+                                    <a href="course.html?id=${course.id}" class="btn btn-sm ${btnClass} rounded-pill px-3 fw-bold" aria-label="Подробнее о курсе ${course.title}">Подробнее</a>
                                 </div>
                             </div>
                         </div>
