@@ -135,13 +135,13 @@ small {
 .form-control::placeholder,
 .form-select::placeholder,
 textarea::placeholder {
-    color: #A29BAF;
+    color: var(--muted);
 }
 
 .form-control:focus,
 .form-select:focus,
 textarea:focus {
-    border-color: #C9B6F3;
+    border-color: var(--primary);
     box-shadow: 0 0 0 0.2rem rgba(165, 134, 227, 0.16);
 }
 
@@ -153,13 +153,13 @@ textarea:focus {
 
 .progress {
     height: 10px;
-    background: #EEE8F8;
-    border-radius: 999px;
+    background: var(--primary-light);
+    border-radius: var(--radius-full);
     overflow: hidden;
 }
 
 .progress-bar {
-    border-radius: 999px;
+    border-radius: var(--radius-full);
 }
 
 .table {
@@ -188,11 +188,29 @@ textarea:focus {
 }
 
 .bg-dark {
-    background-color: #1C1826;
+    background-color: var(--dark);
 }
 
 .text-light {
     color: rgba(255, 255, 255, 0.82);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-soft);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
 }
 
 @media (max-width: 768px) {
